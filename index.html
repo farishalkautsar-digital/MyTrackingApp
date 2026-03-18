@@ -43,19 +43,20 @@
 <div id="authContainer" class="auth-screen">
   <div class="glass-card p-4 w-100" style="max-width: 400px;">
     <h3 class="text-center fw-bold text-success mb-4">MyTracker</h3>
-    <div id="loginForm">
-      <input type="email" id="emailIn" class="form-control mb-2" placeholder="Email">
-      <input type="password" id="passIn" class="form-control mb-3" placeholder="Password">
-      <button class="btn btn-success w-100 fw-bold mb-3" onclick="handleLogin()">Masuk</button>
+    <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();">
+      <input type="email" id="emailIn" class="form-control mb-2" placeholder="Email" required>
+      <input type="password" id="passIn" class="form-control mb-3" placeholder="Password" required>
+      <button type="submit" id="btnLogin" class="btn btn-success w-100 fw-bold mb-3">Masuk</button>
       <p class="text-center small">Belum punya akun? <a href="#" onclick="toggleAuth(true)">Daftar Gratis</a></p>
-    </div>
-    <div id="registerForm" style="display: none;">
-      <input type="text" id="nameReg" class="form-control mb-2" placeholder="Nama Lengkap">
-      <input type="email" id="emailReg" class="form-control mb-2" placeholder="Email Baru">
-      <input type="password" id="passReg" class="form-control mb-3" placeholder="Password (min 6 karakter)">
-      <button class="btn btn-primary w-100 fw-bold mb-3" onclick="handleRegister()">Buat Akun</button>
+    </form>
+
+    <form id="registerForm" onsubmit="event.preventDefault(); handleRegister();" style="display: none;">
+      <input type="text" id="nameReg" class="form-control mb-2" placeholder="Nama Lengkap" required>
+      <input type="email" id="emailReg" class="form-control mb-2" placeholder="Email Baru" required>
+      <input type="password" id="passReg" class="form-control mb-3" placeholder="Password (min 6 karakter)" minlength="6" required>
+      <button type="submit" id="btnReg" class="btn btn-primary w-100 fw-bold mb-3">Buat Akun</button>
       <p class="text-center small">Sudah punya akun? <a href="#" onclick="toggleAuth(false)">Login</a></p>
-    </div>
+    </form>
   </div>
 </div>
 
@@ -270,22 +271,43 @@
   };
 
   window.handleRegister = async () => {
+    const btn = document.getElementById('btnReg');
     const name = document.getElementById('nameReg').value;
     const email = document.getElementById('emailReg').value;
     const pass = document.getElementById('passReg').value;
+    
+    // Ubah tombol jadi loading
+    btn.innerHTML = 'Memproses...';
+    btn.disabled = true;
+
     try {
       const res = await createUserWithEmailAndPassword(auth, email, pass);
       await setDoc(doc(db, "users", res.user.uid), { nama: name, email: email, createdAt: new Date() });
       Swal.fire("Berhasil", "Akun dibuat!", "success");
-    } catch (e) { Swal.fire("Error", e.message, "error"); }
+    } catch (e) { 
+      Swal.fire("Error", e.message, "error"); 
+      btn.innerHTML = 'Buat Akun'; // Kembalikan tombol jika error
+      btn.disabled = false;
+    }
   };
 
   window.handleLogin = async () => {
+    const btn = document.getElementById('btnLogin');
     const email = document.getElementById('emailIn').value;
     const pass = document.getElementById('passIn').value;
+    
+    // Ubah tombol jadi loading
+    btn.innerHTML = 'Mencari Akun...';
+    btn.disabled = true;
+
     try {
       await signInWithEmailAndPassword(auth, email, pass);
-    } catch (e) { Swal.fire("Gagal", "Email/Password salah", "error"); }
+      // Jika berhasil, onAuthStateChanged akan otomatis menyembunyikan halaman login
+    } catch (e) { 
+      Swal.fire("Gagal", "Email atau Password salah!", "error"); 
+      btn.innerHTML = 'Masuk'; // Kembalikan tombol jika error
+      btn.disabled = false;
+    }
   };
 
   window.handleLogout = () => signOut(auth);
