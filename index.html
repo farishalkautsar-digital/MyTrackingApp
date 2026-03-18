@@ -612,22 +612,105 @@
     document.getElementById('bulkData').value = '';
   };
 
-  // --- RENDER FUNGSI ---
+  // --- DASHBOARD SUPER & GAMIFIKASI ---
   function renderDashboard() {
     const cont = document.getElementById('dashboardStats');
+    cont.innerHTML = '';
+
+    // 1. KALKULASI ISTIQOMAH STREAK 🔥
+    // Kita ambil tanggal dari log yang sudah diinput (format: YYYY-MM-DD)
+    const uniqueDates = [...new Set(userLogs.filter(l => l.tanggal).map(l => l.tanggal))].sort().reverse();
     
+    let streak = 0;
+    const today = new Date();
+    // Sesuaikan zona waktu lokal (WIB)
+    const tzOffset = today.getTimezoneOffset() * 60000;
+    const localISOTime = (new Date(today - tzOffset)).toISOString().split('T')[0];
+    
+    let checkDate = new Date(localISOTime);
+    
+    // Cek apakah hari ini atau kemarin ada ngaji?
+    const todayStr = localISOTime;
+    let yesterdayDate = new Date(checkDate);
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
+
+    if (uniqueDates.includes(todayStr) || uniqueDates.includes(yesterdayStr)) {
+        let currentDate = uniqueDates.includes(todayStr) ? checkDate : yesterdayDate;
+        
+        for (let i = 0; i < uniqueDates.length; i++) {
+            const dateStr = currentDate.toISOString().split('T')[0];
+            if (uniqueDates.includes(dateStr)) {
+                streak++;
+                currentDate.setDate(currentDate.getDate() - 1); // Mundur 1 hari
+            } else {
+                break; // Streak terputus
+            }
+        }
+    }
+
+    // 2. MENCARI LOG TERAKHIR UNTUK QUICK RESUME 🚀
+    // Urutkan berdasarkan updatedAt (waktu real-time nge-klik)
+    let lastLog = null;
+    if (userLogs.length > 0) {
+        const sortedLogs = [...userLogs].sort((a, b) => {
+            const timeA = a.updatedAt ? a.updatedAt.toMillis() : 0;
+            const timeB = b.updatedAt ? b.updatedAt.toMillis() : 0;
+            return timeB - timeA;
+        });
+        lastLog = sortedLogs[0];
+    }
+
+    // ==========================================
+    // RENDER UI DASHBOARD
+    // ==========================================
+    let html = '';
+
+    // A. KARTU API ISTIQOMAH & QUICK RESUME (HERO SECTION)
+    html += `
+    <div class="row g-2 mb-4">
+        <div class="col-5">
+            <div class="glass-card p-3 text-center h-100 d-flex flex-column justify-content-center" style="background: linear-gradient(135deg, #fffcf5 0%, #fff 100%); border: 1px solid #ffeeba;">
+                <div style="font-size: 2rem; line-height: 1;">🔥</div>
+                <h3 class="fw-bold text-dark m-0 mt-1">${streak} <span style="font-size: 0.8rem; font-weight: normal; color: #6c757d;">Hari</span></h3>
+                <small class="text-warning fw-bold" style="font-size: 0.65rem;">Istiqomah Streak</small>
+            </div>
+        </div>
+        
+        <div class="col-7">
+            <div class="glass-card p-3 h-100 d-flex flex-column justify-content-center text-white" style="background: linear-gradient(135deg, #198754 0%, #20c997 100%); cursor: pointer; box-shadow: 0 4px 15px rgba(25, 135, 84, 0.3);" id="btnQuickResume">
+                ${lastLog ? `
+                    <small class="text-white-50 fw-bold mb-1" style="font-size: 0.65rem;"><i class="bi bi-clock-history"></i> LANJUTKAN NGAJI</small>
+                    <div class="fw-bold text-truncate" style="font-size: 0.9rem;">${lastLog.judul}</div>
+                    <div class="small" style="font-size: 0.75rem;">Terakhir Hal ${lastLog.kat === 'Quran' && currentCetakan === '605' ? lastLog.hal + 1 : lastLog.hal} <i class="bi bi-arrow-right-circle ms-1"></i></div>
+                ` : `
+                    <small class="text-white-50 fw-bold mb-1" style="font-size: 0.65rem;"><i class="bi bi-play-circle"></i> MULAI NGAJI</small>
+                    <div class="fw-bold" style="font-size: 0.85rem;">Belum ada jejak</div>
+                    <div class="small" style="font-size: 0.7rem;">Pilih kitab di menu Track</div>
+                `}
+            </div>
+        </div>
+    </div>`;
+
+    // B. PROGRESS AL-QURAN (FULL WIDTH)
     const maxHal = currentCetakan === '604' ? 604 : 605;
     const qDone = userLogs.filter(l => l.kat === 'Quran').length;
     let qPerc = Math.round((qDone / maxHal) * 100);
     if(qPerc > 100) qPerc = 100;
 
-    let html = `<div class="glass-card p-3 mb-3 border-start border-4 border-success">
-        <h6 class="fw-bold text-success">Al-Qur'an</h6>
-        <div class="progress mb-1" style="height:15px"><div class="progress-bar bg-success" style="width:${qPerc}%"></div></div>
-        <small class="text-muted fw-bold">${qDone}/${maxHal} Halaman (${qPerc}%)</small>
+    html += `
+    <h6 class="fw-bold text-success mb-3"><i class="bi bi-book"></i> Mushaf Al-Qur'an</h6>
+    <div class="glass-card p-3 mb-4 border-start border-4 border-success">
+        <div class="d-flex justify-content-between align-items-end mb-1">
+            <h6 class="fw-bold text-dark m-0">Khatam Progres</h6>
+            <small class="text-success fw-bold">${qDone}/${maxHal} Hal (${qPerc}%)</small>
+        </div>
+        <div class="progress rounded-pill shadow-sm" style="height: 10px; background-color: #e9ecef;">
+            <div class="progress-bar bg-success rounded-pill" style="width:${qPerc}%"></div>
+        </div>
         
         <details class="mt-3">
-            <summary class="text-success fw-bold" style="cursor: pointer; font-size: 0.85rem; outline: none;">
+            <summary class="text-success fw-bold" style="cursor: pointer; font-size: 0.8rem; outline: none;">
                 <i class="bi bi-list-columns"></i> Lihat Detail Per Surat
             </summary>
             <div class="mt-3 pe-2" style="max-height: 250px; overflow-y: auto;">`;
@@ -637,33 +720,77 @@
         const sLogs = userLogs.filter(l => l.kat === 'Quran' && l.judul === q.nama).length;
         let p = Math.round((sLogs / totalHal) * 100);
         if(p > 100) p = 100;
-
         let barColor = p === 100 ? 'bg-success' : 'bg-warning';
         let opacity = sLogs === 0 ? 'opacity-50' : '';
 
         html += `
             <div class="mb-2 ${opacity}">
-                <div class="d-flex justify-content-between small fw-bold text-muted mb-1" style="font-size: 0.75rem;">
-                    <span>${q.no}. ${q.nama}</span>
-                    <span>${sLogs}/${totalHal}</span>
+                <div class="d-flex justify-content-between small fw-bold text-muted mb-1" style="font-size: 0.7rem;">
+                    <span>${q.no}. ${q.nama}</span><span>${sLogs}/${totalHal}</span>
                 </div>
-                <div class="progress" style="height: 5px;">
-                    <div class="progress-bar ${barColor}" style="width: ${p}%"></div>
+                <div class="progress rounded-pill" style="height: 4px;">
+                    <div class="progress-bar ${barColor} rounded-pill" style="width: ${p}%"></div>
                 </div>
             </div>`;
     });
-
     html += `</div></details></div>`;
 
+    // C. PROGRESS HIMPUNAN (GRID 2 KOLOM)
+    html += `<h6 class="fw-bold text-primary mb-3 mt-2"><i class="bi bi-journals"></i> Buku Himpunan</h6>`;
+    html += `<div class="row g-2 mb-4">`; // Mulai Grid Row
+    
     userHimpunan.forEach(h => {
         const hDone = userLogs.filter(l => l.kat === 'Himpunan' && l.judul === h.nama).length;
         const hPerc = h.total > 0 ? Math.round((hDone / h.total) * 100) : 0;
-        html += `<div class="glass-card p-3 mb-3 border-start border-4 border-primary">
-            <h6 class="fw-bold text-primary">${h.nama}</h6>
-            <div class="progress mb-1" style="height:15px"><div class="progress-bar bg-primary" style="width:${hPerc}%"></div></div>
-            <small class="text-muted fw-bold">${hDone}/${h.total} Halaman (${hPerc}%)</small>
+        
+        html += `
+        <div class="col-6">
+            <div class="glass-card p-3 h-100 border-start border-4 border-primary d-flex flex-column justify-content-between">
+                <div>
+                    <div class="fw-bold text-dark text-truncate mb-1" style="font-size: 0.8rem;" title="${h.nama}">${h.nama}</div>
+                    <div class="small text-muted mb-2" style="font-size: 0.65rem;">${hDone}/${h.total} Hal (${hPerc}%)</div>
+                </div>
+                <div class="progress rounded-pill shadow-sm" style="height: 6px; background-color: #e9ecef;">
+                    <div class="progress-bar bg-primary rounded-pill" style="width:${hPerc}%"></div>
+                </div>
+            </div>
         </div>`;
     });
+    html += `</div>`; // Tutup Grid Row
+    
+    cont.innerHTML = html;
+
+    // --- LOGIKA KLIK QUICK RESUME ---
+    if (lastLog) {
+        document.getElementById('btnQuickResume').onclick = () => {
+            // Pindah tab ke Track
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item')[1].classList.add('active'); 
+            document.getElementById('view-tracker').classList.add('active');
+
+            // Buka Kategori dan Grid yang sesuai
+            switchKategori(lastLog.kat);
+            
+            if (lastLog.kat === 'Quran') {
+                const qData = quranDb.find(q => q.nama === lastLog.judul);
+                if (qData) {
+                    let s = qData.start; let e = qData.end;
+                    if (currentCetakan === '605') { s += 1; e += 1; }
+                    openGrid({ nama: qData.nama, start: s, end: e, total: (e - s + 1) });
+                }
+            } else {
+                const hData = userHimpunan.find(h => h.nama === lastLog.judul);
+                if (hData) openGrid(hData);
+            }
+        };
+    } else {
+        // Jika belum pernah ngaji sama sekali, arahkan ke tab Track biasa
+        document.getElementById('btnQuickResume').onclick = () => {
+            switchView('tracker', document.querySelectorAll('.nav-item')[1]);
+        };
+    }
+  }
     
     cont.innerHTML = html;
   }
