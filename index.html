@@ -688,7 +688,7 @@
     });
   }
 
-  // --- FITUR BARU: SMART SEARCH (ZERO-LOADING) ---
+// --- FITUR BARU: OMNISEARCH (CARI BUKU & CATATAN) ---
   window.performSearch = () => {
     const query = document.getElementById('searchInput').value.toLowerCase();
     const container = document.getElementById('searchResults');
@@ -698,62 +698,116 @@
         container.innerHTML = `
         <div class="text-center text-muted mt-5 small">
             <i class="bi bi-journal-text" style="font-size: 3rem;"></i><br><br>
-            Ketik kata kunci untuk mencari jejak ngaji Mas...
+            Ketik kata kunci untuk mencari kitab, surat, atau catatan...
         </div>`;
         return;
     }
 
-    // Filter array userLogs (mencari kecocokan di judul, catatan, penyampai, atau lokasi)
-    const results = userLogs.filter(log => {
+    container.innerHTML = ''; // Bersihkan layar
+    let hasResults = false;
+
+    // ==========================================
+    // 1. CARI JALAN PINTAS KE BUKU / SURAT (MASTER DATA)
+    // ==========================================
+    const matchQuran = quranDb.filter(q => q.nama.toLowerCase().includes(query));
+    const matchHimpunan = userHimpunan.filter(h => 
+        (h.nama && h.nama.toLowerCase().includes(query)) || 
+        (h.topik && h.topik.toLowerCase().includes(query))
+    );
+
+    if (matchQuran.length > 0 || matchHimpunan.length > 0) {
+        hasResults = true;
+        container.innerHTML += `<h6 class="fw-bold text-success mb-3 mt-2"><i class="bi bi-book"></i> Jalan Pintas Buku / Surat</h6>`;
+        
+        // Tampilkan Hasil Al-Quran
+        matchQuran.forEach(q => {
+            let s = q.start; let e = q.end;
+            if (currentCetakan === '605') { s += 1; e += 1; } // Translasi Cetakan
+            
+            const card = document.createElement('div');
+            card.className = 'list-card mb-2 border-start border-4 border-success py-2';
+            card.innerHTML = `<div class="fw-bold">${q.nama}</div><div class="small text-success ms-auto fw-bold">Buka Grid <i class="bi bi-arrow-right"></i></div>`;
+            card.onclick = () => {
+                switchKategori('Quran');
+                openGrid({ nama: q.nama, start: s, end: e, total: (e - s + 1) });
+                // Animasi pindah tab ke Tracker otomatis
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+                document.querySelectorAll('.nav-item')[1].classList.add('active'); // Tab Track
+                document.getElementById('view-tracker').classList.add('active');
+            };
+            container.appendChild(card);
+        });
+
+        // Tampilkan Hasil Himpunan
+        matchHimpunan.forEach(h => {
+            const card = document.createElement('div');
+            card.className = 'list-card mb-2 border-start border-4 border-primary py-2';
+            card.innerHTML = `<div class="fw-bold">${h.nama}</div><div class="small text-primary ms-auto fw-bold">Buka Grid <i class="bi bi-arrow-right"></i></div>`;
+            card.onclick = () => {
+                switchKategori('Himpunan');
+                openGrid(h);
+                // Animasi pindah tab ke Tracker otomatis
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+                document.querySelectorAll('.nav-item')[1].classList.add('active'); // Tab Track
+                document.getElementById('view-tracker').classList.add('active');
+            };
+            container.appendChild(card);
+        });
+    }
+
+    // ==========================================
+    // 2. CARI ISI CATATAN (LOGS SEBELUMNYA)
+    // ==========================================
+    const matchLogs = userLogs.filter(log => {
         const textToSearch = `${log.judul} ${log.catatan} ${log.penyampai} ${log.lokasi}`.toLowerCase();
         return textToSearch.includes(query);
     });
 
-    // Jika tidak ada hasil
-    if (results.length === 0) {
-        container.innerHTML = '<div class="text-center text-danger mt-5 small fw-bold">Tidak ada catatan yang cocok.</div>';
-        return;
+    if (matchLogs.length > 0) {
+        hasResults = true;
+        container.innerHTML += `<h6 class="fw-bold text-warning mb-3 mt-4"><i class="bi bi-journal-text"></i> Hasil Isi Catatan</h6>`;
+        
+        matchLogs.reverse().forEach(log => {
+            let uiHal = log.hal;
+            if (log.kat === 'Quran' && currentCetakan === '605') uiHal += 1; // Translasi Cetakan
+
+            const card = document.createElement('div');
+            card.className = 'list-card flex-column align-items-start mb-3';
+            card.style.cursor = 'pointer';
+            card.style.borderLeft = log.kat === 'Quran' ? '4px solid #198754' : '4px solid #0d6efd';
+            
+            card.onclick = () => {
+                activeGrid = { nama: log.judul, start: log.hal, end: log.hal, total: 1 };
+                currentKategori = log.kat;
+                openNote(uiHal, log.hal, log);
+            };
+
+            card.innerHTML = `
+                <div class="d-flex w-100 justify-content-between align-items-center mb-2">
+                    <span class="badge bg-${log.kat === 'Quran' ? 'success' : 'primary'}">${log.kat}</span>
+                    <small class="text-muted"><i class="bi bi-calendar-event"></i> ${log.tanggal || '-'}</small>
+                </div>
+                <div class="fw-bold text-dark mb-1">${log.judul} • Hal ${uiHal}</div>
+                <div class="small text-secondary mb-2">
+                    <i class="bi bi-person"></i> ${log.penyampai || 'Tanpa Penyampai'} | 
+                    <i class="bi bi-geo-alt"></i> ${log.lokasi || '-'}
+                </div>
+                <div class="small text-dark border-start border-2 border-secondary ps-2 text-wrap" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-style: italic;">
+                    "${log.catatan || 'Tidak ada teks catatan'}"
+                </div>
+            `;
+            container.appendChild(card);
+        });
     }
 
-    container.innerHTML = '';
-    
-    // Tampilkan hasil dari yang terbaru
-    results.reverse().forEach(log => {
-        let uiHal = log.hal;
-        
-        // Sesuaikan tampilan halaman Al-Quran jika user sedang pakai mode 605
-        if (log.kat === 'Quran' && currentCetakan === '605') {
-            uiHal = log.hal + 1;
-        }
-
-        const card = document.createElement('div');
-        card.className = 'list-card flex-column align-items-start mb-3';
-        card.style.cursor = 'pointer';
-        card.style.borderLeft = log.kat === 'Quran' ? '4px solid #198754' : '4px solid #0d6efd';
-        
-        // Memungkinkan user mengklik hasil pencarian untuk langsung membuka/mengedit catatannya
-        card.onclick = () => {
-            activeGrid = { nama: log.judul, start: log.hal, end: log.hal, total: 1 };
-            currentKategori = log.kat;
-            openNote(uiHal, log.hal, log);
-        };
-
-        card.innerHTML = `
-            <div class="d-flex w-100 justify-content-between align-items-center mb-2">
-                <span class="badge bg-${log.kat === 'Quran' ? 'success' : 'primary'}">${log.kat}</span>
-                <small class="text-muted"><i class="bi bi-calendar-event"></i> ${log.tanggal || '-'}</small>
-            </div>
-            <div class="fw-bold text-dark mb-1">${log.judul} • Hal ${uiHal}</div>
-            <div class="small text-secondary mb-2">
-                <i class="bi bi-person"></i> ${log.penyampai || 'Tanpa Penyampai'} | 
-                <i class="bi bi-geo-alt"></i> ${log.lokasi || '-'}
-            </div>
-            <div class="small text-dark border-start border-2 border-secondary ps-2 text-wrap" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-style: italic;">
-                "${log.catatan || 'Tidak ada teks catatan'}"
-            </div>
-        `;
-        container.appendChild(card);
-    });
+    // ==========================================
+    // JIKA KEDUANYA TIDAK DITEMUKAN
+    // ==========================================
+    if (!hasResults) {
+        container.innerHTML = '<div class="text-center text-danger mt-5 small fw-bold">Tidak ada buku atau catatan yang cocok.</div>';
+    }
   };
 
 </script>
