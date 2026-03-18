@@ -45,19 +45,19 @@
   <div class="glass-card p-4 w-100 mb-3" style="max-width: 400px;">
     <h3 class="text-center fw-bold text-success mb-4">MaknaTrack</h3>
     
-    <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();">
+    <form id="loginForm" onsubmit="window.handleLogin(event)">
       <input type="email" id="emailIn" class="form-control mb-2" placeholder="Email" required>
       <input type="password" id="passIn" class="form-control mb-3" placeholder="Password" required>
       <button type="submit" id="btnLogin" class="btn btn-success w-100 fw-bold mb-3">Masuk</button>
-      <p class="text-center small">Belum punya akun? <a href="#" onclick="toggleAuth(true)">Daftar Gratis</a></p>
+      <p class="text-center small">Belum punya akun? <a href="#" onclick="window.toggleAuth(true)">Daftar Gratis</a></p>
     </form>
 
-    <form id="registerForm" onsubmit="event.preventDefault(); handleRegister();" style="display: none;">
+    <form id="registerForm" onsubmit="window.handleRegister(event)" style="display: none;">
       <input type="text" id="nameReg" class="form-control mb-2" placeholder="Nama Lengkap" required>
       <input type="email" id="emailReg" class="form-control mb-2" placeholder="Email Baru" required>
       <input type="password" id="passReg" class="form-control mb-3" placeholder="Password (min 6 karakter)" minlength="6" required>
       <button type="submit" id="btnReg" class="btn btn-primary w-100 fw-bold mb-3">Buat Akun</button>
-      <p class="text-center small">Sudah punya akun? <a href="#" onclick="toggleAuth(false)">Login</a></p>
+      <p class="text-center small">Sudah punya akun? <a href="#" onclick="window.toggleAuth(false)">Login</a></p>
     </form>
   </div>
   <div class="credit-text">&copy; 2026 | Designed & Engineered by Farish Alkautsar</div>
@@ -67,7 +67,7 @@
   <div id="view-dashboard" class="view-section active">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-bold m-0">Dashboard</h4>
-        <button class="btn btn-sm btn-outline-danger" onclick="handleLogout()"><i class="bi bi-box-arrow-right"></i></button>
+        <button class="btn btn-sm btn-outline-danger" onclick="window.handleLogout()"><i class="bi bi-box-arrow-right"></i></button>
     </div>
     <div id="dashboardStats"></div>
     <div class="credit-text mt-5">&copy; 2026 | Designed & Engineered by Farish Alkautsar</div>
@@ -75,13 +75,13 @@
 
   <div id="view-tracker" class="view-section">
     <div class="btn-group w-100 mb-4 shadow-sm" style="border-radius: 15px; overflow: hidden;">
-        <button id="btnKatQuran" class="btn btn-success active" onclick="switchKategori('Quran')">Al-Qur'an</button>
-        <button id="btnKatHimpunan" class="btn btn-light" onclick="switchKategori('Himpunan')">Himpunan</button>
+        <button id="btnKatQuran" class="btn btn-success active" onclick="window.switchKategori('Quran')">Al-Qur'an</button>
+        <button id="btnKatHimpunan" class="btn btn-light" onclick="window.switchKategori('Himpunan')">Himpunan</button>
     </div>
     
     <div id="quranOptions" class="mb-3 d-flex justify-content-end align-items-center">
         <label class="small text-muted fw-bold me-2">Cetakan:</label>
-        <select id="selectCetakan" class="form-select form-select-sm w-auto shadow-sm" onchange="changeCetakan(this.value)">
+        <select id="selectCetakan" class="form-select form-select-sm w-auto shadow-sm" onchange="window.changeCetakan(this.value)">
             <option value="605">605 Halaman</option>
             <option value="604">604 Halaman</option>
         </select>
@@ -90,7 +90,7 @@
     <div id="masterList"></div>
     
     <div id="detailGrid" style="display: none;">
-        <button class="btn btn-light mb-3 fw-bold" onclick="closeGrid()"><i class="bi bi-arrow-left"></i> Kembali</button>
+        <button class="btn btn-light mb-3 fw-bold" onclick="window.closeGrid()"><i class="bi bi-arrow-left"></i> Kembali</button>
         <h5 id="gridTitle" class="fw-bold text-success mb-3"></h5>
         <div class="d-flex flex-wrap gap-2 justify-content-center" id="gridContainer"></div>
     </div>
@@ -101,7 +101,7 @@
     <div class="glass-card p-3 mb-4 sticky-top" style="top: 10px; z-index: 100;">
         <div class="input-group">
             <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
-            <input type="text" id="searchInput" class="form-control border-start-0 ps-0" placeholder="Ketik kata kunci, nama kitab, atau ustaz..." onkeyup="performSearch()">
+            <input type="text" id="searchInput" class="form-control border-start-0 ps-0" placeholder="Ketik kata kunci, nama kitab, atau ustaz..." onkeyup="window.performSearch()">
         </div>
     </div>
     <div id="searchResults">
@@ -120,39 +120,39 @@
         <input type="text" id="himpNama" class="form-control mb-2" placeholder="Nama Himpunan">
         <input type="text" id="himpTopik" class="form-control mb-2" placeholder="Topik">
         <input type="number" id="himpTotal" class="form-control mb-3" placeholder="Total Halaman">
-        <button class="btn btn-success w-100 fw-bold" onclick="addHimpunan()">Simpan ke Server</button>
+        <button class="btn btn-success w-100 fw-bold" onclick="window.addHimpunan()">Simpan ke Server</button>
     </div>
 
     <div class="glass-card p-3 mb-4 border-start border-4 border-warning">
         <h6 class="fw-bold text-warning mb-3"><i class="bi bi-lightning-charge"></i> Bulk Insert (Cepat)</h6>
         <p class="small text-muted mb-2">Format: <b>Nama, Topik, Total</b> (Pisahkan dengan Enter)</p>
         <textarea id="bulkData" class="form-control mb-3" rows="3" placeholder="Contoh:&#10;Kitabus Sholah, Bab Sholat, 151&#10;Kitabu Da'awat, Bab Doa, 120"></textarea>
-        <button class="btn btn-warning w-100 fw-bold" onclick="bulkInsertHimpunan()">Eksekusi Bulk Insert</button>
+        <button class="btn btn-warning w-100 fw-bold" onclick="window.bulkInsertHimpunan()">Eksekusi Bulk Insert</button>
     </div>
 
     <div id="manageList"></div>
   </div>
 
   <div class="bottom-nav">
-    <div class="nav-item active" onclick="switchView('dashboard', this)"><i class="bi bi-house-door"></i>Home</div>
-    <div class="nav-item" onclick="switchView('tracker', this)"><i class="bi bi-card-checklist"></i>Track</div>
-    <div class="nav-item" onclick="switchView('search', this)"><i class="bi bi-search"></i>Cari</div>
-    <div class="nav-item" id="navManage" onclick="switchView('manage', this)"><i class="bi bi-gear"></i>Kelola</div>
+    <div class="nav-item active" onclick="window.switchView('dashboard', this)"><i class="bi bi-house-door"></i>Home</div>
+    <div class="nav-item" onclick="window.switchView('tracker', this)"><i class="bi bi-card-checklist"></i>Track</div>
+    <div class="nav-item" onclick="window.switchView('search', this)"><i class="bi bi-search"></i>Cari</div>
+    <div class="nav-item" id="navManage" onclick="window.switchView('manage', this)"><i class="bi bi-gear"></i>Kelola</div>
   </div>
 </div>
 
 <div id="fullScreenNote">
     <div class="p-3 bg-success text-white d-flex justify-content-between align-items-center">
-        <button class="btn btn-sm btn-light" onclick="closeNote()">Batal</button>
+        <button class="btn btn-sm btn-light" onclick="window.closeNote()">Batal</button>
         <span id="noteHeader" class="fw-bold">Halaman X</span>
-        <button class="btn btn-sm btn-warning fw-bold" onclick="saveNote()">Simpan</button>
+        <button class="btn btn-sm btn-warning fw-bold" onclick="window.saveNote()">Simpan</button>
     </div>
     <div class="p-3 flex-grow-1 overflow-auto">
         <input type="text" id="notePenyampai" class="form-control mb-2" placeholder="Penyampai (Mubaligh)">
         <input type="date" id="noteTanggal" class="form-control mb-2">
         <input type="text" id="noteLokasi" class="form-control mb-3" placeholder="Lokasi Ngaji">
         <textarea id="noteCatatan" class="form-control" style="height: 300px;" placeholder="Tulis makna/keterangan di sini..."></textarea>
-        <button id="btnDeleteLog" class="btn btn-outline-danger w-100 mt-4" onclick="deleteNote()">Hapus Progres Halaman Ini</button>
+        <button id="btnDeleteLog" class="btn btn-outline-danger w-100 mt-4" onclick="window.deleteNote()">Hapus Progres Halaman Ini</button>
     </div>
 </div>
 
@@ -174,9 +174,6 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  // ==========================================
-  // EMAIL ADMIN (GANTI JIKA PERLU)
-  // ==========================================
   const ADMIN_EMAIL = "farishalkautsar@gmail.com"; 
 
   let currentUser = null;
@@ -184,9 +181,8 @@
   let userHimpunan = [];
   let currentKategori = 'Quran';
   let activeGrid = null;
-  let currentCetakan = localStorage.getItem('cetakanQuran') || '604'; // Default disamakan dengan array
+  let currentCetakan = localStorage.getItem('cetakanQuran') || '604';
 
-  // ARRAY SINGLE SOURCE OF TRUTH (CETAKAN 604)
   const quranDb = [
     { no: 1, nama: "Al-Fatihah", start: 1, end: 1 },
     { no: 2, nama: "Al-Baqarah", start: 2, end: 49 },
@@ -304,13 +300,14 @@
     { no: 114, nama: "An-Nas", start: 604, end: 604 }
   ];
 
-  // --- AUTH LOGIC ---
   window.toggleAuth = (isReg) => {
     document.getElementById('loginForm').style.display = isReg ? 'none' : 'block';
     document.getElementById('registerForm').style.display = isReg ? 'block' : 'none';
   };
 
-  window.handleRegister = async () => {
+  // --- PERBAIKAN LOGIN & REGIS ---
+  window.handleRegister = async (e) => {
+    if (e) e.preventDefault();
     const btn = document.getElementById('btnReg');
     const name = document.getElementById('nameReg').value;
     const email = document.getElementById('emailReg').value;
@@ -320,20 +317,21 @@
       const res = await createUserWithEmailAndPassword(auth, email, pass);
       await setDoc(doc(db, "users", res.user.uid), { nama: name, email: email, createdAt: new Date() });
       Swal.fire("Berhasil", "Akun dibuat!", "success");
-    } catch (e) { 
-      Swal.fire("Error", e.message, "error"); 
+    } catch (err) { 
+      Swal.fire("Error", err.message, "error"); 
       btn.innerHTML = 'Buat Akun'; btn.disabled = false;
     }
   };
 
-  window.handleLogin = async () => {
+  window.handleLogin = async (e) => {
+    if (e) e.preventDefault();
     const btn = document.getElementById('btnLogin');
     const email = document.getElementById('emailIn').value;
     const pass = document.getElementById('passIn').value;
     btn.innerHTML = 'Mencari Akun...'; btn.disabled = true;
     try {
       await signInWithEmailAndPassword(auth, email, pass);
-    } catch (e) { 
+    } catch (err) { 
       Swal.fire("Gagal", "Email/Password salah", "error"); 
       btn.innerHTML = 'Masuk'; btn.disabled = false;
     }
@@ -347,13 +345,11 @@
       document.getElementById('authContainer').style.display = 'none';
       document.getElementById('mainApp').style.display = 'block';
       
-      // LOGIKA ADMIN
       if (currentUser.email === ADMIN_EMAIL) {
           document.getElementById('navManage').style.display = 'block';
       } else {
           document.getElementById('navManage').style.display = 'none';
       }
-
       initDataListener();
     } else {
       document.getElementById('authContainer').style.display = 'flex';
@@ -361,9 +357,7 @@
     }
   });
 
-  // --- DATA LISTENER ---
   function initDataListener() {
-    // Progress User (Private)
     const qLogs = query(collection(db, "log_progres"), where("uid", "==", currentUser.uid));
     onSnapshot(qLogs, (snap) => {
       userLogs = snap.docs.map(d => ({id: d.id, ...d.data()}));
@@ -371,7 +365,6 @@
       if(activeGrid) renderGrid();
     });
 
-    // Master Himpunan (Global & Urut dari bawah/terlama ke terbaru)
     const qHimp = query(collection(db, "master_himpunan"), orderBy("createdAt", "asc"));
     onSnapshot(qHimp, (snap) => {
       userHimpunan = snap.docs.map(d => ({id: d.id, ...d.data()}));
@@ -381,17 +374,15 @@
     });
   }
 
-  // --- UI & NAV LOGIC ---
   window.switchView = (viewId, el) => {
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById('view-' + viewId).classList.add('active');
     el.classList.add('active');
     
-    // --- TAMBAHAN BARU: Reset Search & Master List ---
     document.getElementById('searchInput').value = ''; 
-    if(viewId === 'search') performSearch(); // Kembalikan ke layar kosong
-    if(viewId === 'tracker') { closeGrid(); renderMasterList(); }
+    if(viewId === 'search') window.performSearch(); 
+    if(viewId === 'tracker') { window.closeGrid(); renderMasterList(); }
   };
 
   window.changeCetakan = (val) => {
@@ -406,7 +397,6 @@
     document.getElementById('btnKatQuran').className = kat === 'Quran' ? 'btn btn-success active' : 'btn btn-light';
     document.getElementById('btnKatHimpunan').className = kat === 'Himpunan' ? 'btn btn-success active' : 'btn btn-light';
     
-    // Perbaikan Bug Bootstrap Keras Kepala: Hapus/Tambah class d-flex dan d-none
     const qOpt = document.getElementById('quranOptions');
     if (kat === 'Quran') {
         qOpt.classList.add('d-flex');
@@ -427,16 +417,12 @@
     if (currentKategori === 'Quran') {
       quranDb.forEach(q => {
         let s = q.start; let e = q.end;
-        
-        // JIKA CETAKAN 605, TERJEMAHKAN HALAMANNYA KE ATAS (+1)
-        if (currentCetakan === '605') {
-            s = q.start + 1; e = q.end + 1;
-        }
+        if (currentCetakan === '605') { s += 1; e += 1; }
 
         const card = document.createElement('div');
         card.className = 'list-card';
         card.innerHTML = `<div class="nomor-badge">${q.no}</div><div><div class="fw-bold">${q.nama}</div><div class="small text-muted">Halaman ${s} - ${e}</div></div>`;
-        card.onclick = () => openGrid({ nama: q.nama, start: s, end: e, total: (e - s + 1) });
+        card.onclick = () => window.openGrid({ nama: q.nama, start: s, end: e, total: (e - s + 1) });
         list.appendChild(card);
       });
     } else {
@@ -444,13 +430,12 @@
         const card = document.createElement('div');
         card.className = 'list-card';
         card.innerHTML = `<div class="nomor-badge">${index + 1}</div><div><div class="fw-bold">${h.nama}</div><div class="small text-muted">${h.topik} • ${h.total} Hal</div></div>`;
-        card.onclick = () => openGrid(h);
+        card.onclick = () => window.openGrid(h);
         list.appendChild(card);
       });
     }
   }
 
-  // --- GRID LOGIC ---
   window.openGrid = (item) => {
     activeGrid = item;
     document.getElementById('masterList').style.display = 'none';
@@ -473,23 +458,17 @@
 
     for (let i = start; i <= end; i++) {
       let checkHal = i; 
-      
-      // Jika mode 605, translate balik (-1) untuk cari di Database (yg standarnya 604)
-      if (currentKategori === 'Quran' && currentCetakan === '605') {
-          checkHal = i - 1;
-      }
+      if (currentKategori === 'Quran' && currentCetakan === '605') checkHal = i - 1;
 
       const log = userLogs.find(l => l.kat === currentKategori && l.judul === activeGrid.nama && l.hal == checkHal);
       const btn = document.createElement('div');
       btn.className = `page-btn ${log ? 'done' : ''}`;
       btn.innerText = i; 
-      btn.onclick = () => openNote(i, checkHal, log); 
+      btn.onclick = () => window.openNote(i, checkHal, log); 
       container.appendChild(btn);
     }
   }
 
-  // --- NOTE LOGIC ---
-  let activePage = null;
   window.openNote = (uiHal, stdHal, log) => {
     activePage = { ui: uiHal, std: stdHal, logId: log ? log.id : null };
     document.getElementById('noteHeader').innerText = `Hal ${uiHal}`;
@@ -508,32 +487,30 @@
       uid: currentUser.uid,
       kat: currentKategori,
       judul: activeGrid.nama,
-      hal: activePage.std, // Simpan standar 604 ke DB
+      hal: activePage.std,
       penyampai: document.getElementById('notePenyampai').value,
       tanggal: document.getElementById('noteTanggal').value,
       lokasi: document.getElementById('noteLokasi').value,
       catatan: document.getElementById('noteCatatan').value,
       updatedAt: new Date()
     };
-    
     try {
       if(activePage.logId) {
         await updateDoc(doc(db, "log_progres", activePage.logId), data);
       } else {
         await addDoc(collection(db, "log_progres"), data);
       }
-      closeNote();
+      window.closeNote();
     } catch (e) { alert(e.message); }
   };
 
   window.deleteNote = async () => {
     if(confirm("Hapus progres halaman ini?")) {
         await deleteDoc(doc(db, "log_progres", activePage.logId));
-        closeNote();
+        window.closeNote();
     }
   };
 
-  // --- MANAGE HIMPUNAN LOGIC ---
   window.addHimpunan = async () => {
     const nama = document.getElementById('himpNama').value;
     const topik = document.getElementById('himpTopik').value;
@@ -554,48 +531,30 @@
         `<input id="swal-nama" class="form-control mb-2" placeholder="Nama Himpunan" value="${oldNama}">` +
         `<input id="swal-topik" class="form-control mb-2" placeholder="Topik (Opsional)" value="${oldTopik}">` +
         `<input id="swal-total" type="number" class="form-control" placeholder="Total Halaman" value="${oldTotal}">`,
-      focusConfirm: false,
-      showCancelButton: true,
-      confirmButtonText: 'Simpan Perubahan',
-      cancelButtonText: 'Batal',
-      preConfirm: () => {
-        return [
+      focusConfirm: false, showCancelButton: true, confirmButtonText: 'Simpan Perubahan', cancelButtonText: 'Batal',
+      preConfirm: () => [
           document.getElementById('swal-nama').value,
           document.getElementById('swal-topik').value,
           document.getElementById('swal-total').value
-        ]
-      }
+      ]
     });
 
     if (formValues) {
       const newNama = formValues[0].trim();
       const newTopik = formValues[1].trim();
       const newTotal = parseInt(formValues[2]) || 0;
-
-      if (!newNama) {
-        return Swal.fire("Gagal", "Nama Himpunan tidak boleh kosong!", "error");
-      }
-
+      if (!newNama) return Swal.fire("Gagal", "Nama tidak boleh kosong!", "error");
       try {
-        await updateDoc(doc(db, "master_himpunan", id), {
-          nama: newNama,
-          topik: newTopik,
-          total: newTotal
-        });
+        await updateDoc(doc(db, "master_himpunan", id), { nama: newNama, topik: newTopik, total: newTotal });
         Swal.fire("Berhasil", "Data himpunan diperbarui!", "success");
-      } catch (e) {
-        Swal.fire("Error", e.message, "error");
-      }
+      } catch (e) { Swal.fire("Error", e.message, "error"); }
     }
   };
 
   window.bulkInsertHimpunan = async () => {
     const text = document.getElementById('bulkData').value;
     if(!text) return alert("Data kosong!");
-    
-    const lines = text.split('\n');
-    let count = 0;
-    
+    const lines = text.split('\n'); let count = 0;
     for(let line of lines) {
         const parts = line.split(',');
         if(parts[0] && parts[0].trim() !== '') {
@@ -612,24 +571,17 @@
     document.getElementById('bulkData').value = '';
   };
 
-  // --- DASHBOARD SUPER & GAMIFIKASI ---
   function renderDashboard() {
     const cont = document.getElementById('dashboardStats');
     cont.innerHTML = '';
 
-    // 1. KALKULASI ISTIQOMAH STREAK 🔥
-    // Kita ambil tanggal dari log yang sudah diinput (format: YYYY-MM-DD)
     const uniqueDates = [...new Set(userLogs.filter(l => l.tanggal).map(l => l.tanggal))].sort().reverse();
-    
     let streak = 0;
     const today = new Date();
-    // Sesuaikan zona waktu lokal (WIB)
     const tzOffset = today.getTimezoneOffset() * 60000;
     const localISOTime = (new Date(today - tzOffset)).toISOString().split('T')[0];
-    
     let checkDate = new Date(localISOTime);
     
-    // Cek apakah hari ini atau kemarin ada ngaji?
     const todayStr = localISOTime;
     let yesterdayDate = new Date(checkDate);
     yesterdayDate.setDate(yesterdayDate.getDate() - 1);
@@ -637,20 +589,14 @@
 
     if (uniqueDates.includes(todayStr) || uniqueDates.includes(yesterdayStr)) {
         let currentDate = uniqueDates.includes(todayStr) ? checkDate : yesterdayDate;
-        
         for (let i = 0; i < uniqueDates.length; i++) {
             const dateStr = currentDate.toISOString().split('T')[0];
             if (uniqueDates.includes(dateStr)) {
-                streak++;
-                currentDate.setDate(currentDate.getDate() - 1); // Mundur 1 hari
-            } else {
-                break; // Streak terputus
-            }
+                streak++; currentDate.setDate(currentDate.getDate() - 1);
+            } else break;
         }
     }
 
-    // 2. MENCARI LOG TERAKHIR UNTUK QUICK RESUME 🚀
-    // Urutkan berdasarkan updatedAt (waktu real-time nge-klik)
     let lastLog = null;
     if (userLogs.length > 0) {
         const sortedLogs = [...userLogs].sort((a, b) => {
@@ -661,13 +607,7 @@
         lastLog = sortedLogs[0];
     }
 
-    // ==========================================
-    // RENDER UI DASHBOARD
-    // ==========================================
-    let html = '';
-
-    // A. KARTU API ISTIQOMAH & QUICK RESUME (HERO SECTION)
-    html += `
+    let html = `
     <div class="row g-2 mb-4">
         <div class="col-5">
             <div class="glass-card p-3 text-center h-100 d-flex flex-column justify-content-center" style="background: linear-gradient(135deg, #fffcf5 0%, #fff 100%); border: 1px solid #ffeeba;">
@@ -676,7 +616,6 @@
                 <small class="text-warning fw-bold" style="font-size: 0.65rem;">Istiqomah Streak</small>
             </div>
         </div>
-        
         <div class="col-7">
             <div class="glass-card p-3 h-100 d-flex flex-column justify-content-center text-white" style="background: linear-gradient(135deg, #198754 0%, #20c997 100%); cursor: pointer; box-shadow: 0 4px 15px rgba(25, 135, 84, 0.3);" id="btnQuickResume">
                 ${lastLog ? `
@@ -692,7 +631,6 @@
         </div>
     </div>`;
 
-    // B. PROGRESS AL-QURAN (FULL WIDTH)
     const maxHal = currentCetakan === '604' ? 604 : 605;
     const qDone = userLogs.filter(l => l.kat === 'Quran').length;
     let qPerc = Math.round((qDone / maxHal) * 100);
@@ -708,7 +646,6 @@
         <div class="progress rounded-pill shadow-sm" style="height: 10px; background-color: #e9ecef;">
             <div class="progress-bar bg-success rounded-pill" style="width:${qPerc}%"></div>
         </div>
-        
         <details class="mt-3">
             <summary class="text-success fw-bold" style="cursor: pointer; font-size: 0.8rem; outline: none;">
                 <i class="bi bi-list-columns"></i> Lihat Detail Per Surat
@@ -718,11 +655,9 @@
     quranDb.forEach(q => {
         let totalHal = (q.end - q.start) + 1;
         const sLogs = userLogs.filter(l => l.kat === 'Quran' && l.judul === q.nama).length;
-        let p = Math.round((sLogs / totalHal) * 100);
-        if(p > 100) p = 100;
+        let p = Math.round((sLogs / totalHal) * 100); if(p > 100) p = 100;
         let barColor = p === 100 ? 'bg-success' : 'bg-warning';
         let opacity = sLogs === 0 ? 'opacity-50' : '';
-
         html += `
             <div class="mb-2 ${opacity}">
                 <div class="d-flex justify-content-between small fw-bold text-muted mb-1" style="font-size: 0.7rem;">
@@ -735,14 +670,11 @@
     });
     html += `</div></details></div>`;
 
-    // C. PROGRESS HIMPUNAN (GRID 2 KOLOM)
     html += `<h6 class="fw-bold text-primary mb-3 mt-2"><i class="bi bi-journals"></i> Buku Himpunan</h6>`;
-    html += `<div class="row g-2 mb-4">`; // Mulai Grid Row
-    
+    html += `<div class="row g-2 mb-4">`; 
     userHimpunan.forEach(h => {
         const hDone = userLogs.filter(l => l.kat === 'Himpunan' && l.judul === h.nama).length;
         const hPerc = h.total > 0 ? Math.round((hDone / h.total) * 100) : 0;
-        
         html += `
         <div class="col-6">
             <div class="glass-card p-3 h-100 border-start border-4 border-primary d-flex flex-column justify-content-between">
@@ -756,43 +688,33 @@
             </div>
         </div>`;
     });
-    html += `</div>`; // Tutup Grid Row
-    
+    html += `</div>`; 
     cont.innerHTML = html;
 
-    // --- LOGIKA KLIK QUICK RESUME ---
     if (lastLog) {
         document.getElementById('btnQuickResume').onclick = () => {
-            // Pindah tab ke Track
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item')[1].classList.add('active'); 
             document.getElementById('view-tracker').classList.add('active');
-
-            // Buka Kategori dan Grid yang sesuai
-            switchKategori(lastLog.kat);
-            
+            window.switchKategori(lastLog.kat);
             if (lastLog.kat === 'Quran') {
                 const qData = quranDb.find(q => q.nama === lastLog.judul);
                 if (qData) {
                     let s = qData.start; let e = qData.end;
                     if (currentCetakan === '605') { s += 1; e += 1; }
-                    openGrid({ nama: qData.nama, start: s, end: e, total: (e - s + 1) });
+                    window.openGrid({ nama: qData.nama, start: s, end: e, total: (e - s + 1) });
                 }
             } else {
                 const hData = userHimpunan.find(h => h.nama === lastLog.judul);
-                if (hData) openGrid(hData);
+                if (hData) window.openGrid(hData);
             }
         };
     } else {
-        // Jika belum pernah ngaji sama sekali, arahkan ke tab Track biasa
         document.getElementById('btnQuickResume').onclick = () => {
-            switchView('tracker', document.querySelectorAll('.nav-item')[1]);
+            window.switchView('tracker', document.querySelectorAll('.nav-item')[1]);
         };
     }
-  }
-    
-    cont.innerHTML = html;
   }
 
   function renderManageList() {
@@ -801,30 +723,26 @@
     userHimpunan.forEach(h => {
         const li = document.createElement('div');
         li.className = 'list-card justify-content-between';
-        
         const amanNama = h.nama ? h.nama.replace(/'/g, "\\'") : '';
         const amanTopik = h.topik ? h.topik.replace(/'/g, "\\'") : '';
         const amanTotal = h.total || 0;
-
         li.innerHTML = `
         <div class="flex-grow-1">
             <div class="fw-bold">${h.nama}</div>
             <div class="small text-muted">${h.topik || 'Belum ada topik'} • ${h.total || 0} Hal</div>
         </div>
         <div class="d-flex gap-2">
-            <button class="btn btn-sm btn-outline-primary" onclick="editHimpunan('${h.id}', '${amanNama}', '${amanTopik}', ${amanTotal})"><i class="bi bi-pencil"></i></button>
-            <button class="btn btn-sm btn-outline-danger" onclick="deleteHimpunan('${h.id}')"><i class="bi bi-trash"></i></button>
+            <button class="btn btn-sm btn-outline-primary" onclick="window.editHimpunan('${h.id}', '${amanNama}', '${amanTopik}', ${amanTotal})"><i class="bi bi-pencil"></i></button>
+            <button class="btn btn-sm btn-outline-danger" onclick="window.deleteHimpunan('${h.id}')"><i class="bi bi-trash"></i></button>
         </div>`;
         list.appendChild(li);
     });
   }
 
-// --- FITUR BARU: OMNISEARCH (CARI BUKU & CATATAN) ---
   window.performSearch = () => {
     const query = document.getElementById('searchInput').value.toLowerCase();
     const container = document.getElementById('searchResults');
     
-    // Jika kolom pencarian kosong
     if (!query || query.trim() === '') {
         container.innerHTML = `
         <div class="text-center text-muted mt-5 small">
@@ -834,12 +752,9 @@
         return;
     }
 
-    container.innerHTML = ''; // Bersihkan layar
+    container.innerHTML = ''; 
     let hasResults = false;
 
-    // ==========================================
-    // 1. CARI JALAN PINTAS KE BUKU / SURAT (MASTER DATA)
-    // ==========================================
     const matchQuran = quranDb.filter(q => q.nama.toLowerCase().includes(query));
     const matchHimpunan = userHimpunan.filter(h => 
         (h.nama && h.nama.toLowerCase().includes(query)) || 
@@ -850,47 +765,39 @@
         hasResults = true;
         container.innerHTML += `<h6 class="fw-bold text-success mb-3 mt-2"><i class="bi bi-book"></i> Jalan Pintas Buku / Surat</h6>`;
         
-        // Tampilkan Hasil Al-Quran
         matchQuran.forEach(q => {
             let s = q.start; let e = q.end;
-            if (currentCetakan === '605') { s += 1; e += 1; } // Translasi Cetakan
-            
+            if (currentCetakan === '605') { s += 1; e += 1; } 
             const card = document.createElement('div');
             card.className = 'list-card mb-2 border-start border-4 border-success py-2';
             card.innerHTML = `<div class="fw-bold">${q.nama}</div><div class="small text-success ms-auto fw-bold">Buka Grid <i class="bi bi-arrow-right"></i></div>`;
             card.onclick = () => {
-                switchKategori('Quran');
-                openGrid({ nama: q.nama, start: s, end: e, total: (e - s + 1) });
-                // Animasi pindah tab ke Tracker otomatis
+                window.switchKategori('Quran');
+                window.openGrid({ nama: q.nama, start: s, end: e, total: (e - s + 1) });
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                 document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-                document.querySelectorAll('.nav-item')[1].classList.add('active'); // Tab Track
+                document.querySelectorAll('.nav-item')[1].classList.add('active'); 
                 document.getElementById('view-tracker').classList.add('active');
             };
             container.appendChild(card);
         });
 
-        // Tampilkan Hasil Himpunan
         matchHimpunan.forEach(h => {
             const card = document.createElement('div');
             card.className = 'list-card mb-2 border-start border-4 border-primary py-2';
             card.innerHTML = `<div class="fw-bold">${h.nama}</div><div class="small text-primary ms-auto fw-bold">Buka Grid <i class="bi bi-arrow-right"></i></div>`;
             card.onclick = () => {
-                switchKategori('Himpunan');
-                openGrid(h);
-                // Animasi pindah tab ke Tracker otomatis
+                window.switchKategori('Himpunan');
+                window.openGrid(h);
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                 document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-                document.querySelectorAll('.nav-item')[1].classList.add('active'); // Tab Track
+                document.querySelectorAll('.nav-item')[1].classList.add('active'); 
                 document.getElementById('view-tracker').classList.add('active');
             };
             container.appendChild(card);
         });
     }
 
-    // ==========================================
-    // 2. CARI ISI CATATAN (LOGS SEBELUMNYA)
-    // ==========================================
     const matchLogs = userLogs.filter(log => {
         const textToSearch = `${log.judul} ${log.catatan} ${log.penyampai} ${log.lokasi}`.toLowerCase();
         return textToSearch.includes(query);
@@ -899,20 +806,18 @@
     if (matchLogs.length > 0) {
         hasResults = true;
         container.innerHTML += `<h6 class="fw-bold text-warning mb-3 mt-4"><i class="bi bi-journal-text"></i> Hasil Isi Catatan</h6>`;
-        
         matchLogs.reverse().forEach(log => {
             let uiHal = log.hal;
-            if (log.kat === 'Quran' && currentCetakan === '605') uiHal += 1; // Translasi Cetakan
+            if (log.kat === 'Quran' && currentCetakan === '605') uiHal += 1; 
 
             const card = document.createElement('div');
             card.className = 'list-card flex-column align-items-start mb-3';
             card.style.cursor = 'pointer';
             card.style.borderLeft = log.kat === 'Quran' ? '4px solid #198754' : '4px solid #0d6efd';
-            
             card.onclick = () => {
                 activeGrid = { nama: log.judul, start: log.hal, end: log.hal, total: 1 };
                 currentKategori = log.kat;
-                openNote(uiHal, log.hal, log);
+                window.openNote(uiHal, log.hal, log);
             };
 
             card.innerHTML = `
@@ -933,9 +838,6 @@
         });
     }
 
-    // ==========================================
-    // JIKA KEDUANYA TIDAK DITEMUKAN
-    // ==========================================
     if (!hasResults) {
         container.innerHTML = '<div class="text-center text-danger mt-5 small fw-bold">Tidak ada buku atau catatan yang cocok.</div>';
     }
