@@ -182,6 +182,7 @@
   let currentKategori = 'Quran';
   let activeGrid = null;
   let currentCetakan = localStorage.getItem('cetakanQuran') || '604';
+  let activePage = null; // TAMBAHAN PENTING AGAR TIDAK ERROR
 
   const quranDb = [
     { no: 1, nama: "Al-Fatihah", start: 1, end: 1 },
@@ -305,7 +306,6 @@
     document.getElementById('registerForm').style.display = isReg ? 'block' : 'none';
   };
 
-  // --- PERBAIKAN LOGIN & REGIS ---
   window.handleRegister = async (e) => {
     if (e) e.preventDefault();
     const btn = document.getElementById('btnReg');
@@ -469,13 +469,14 @@
     }
   }
 
+  // POP-UP HALAMAN YANG SUDAH DIPERBAIKI (KEBAL ERROR)
   window.openNote = (uiHal, stdHal, log) => {
     activePage = { ui: uiHal, std: stdHal, logId: log ? log.id : null };
     document.getElementById('noteHeader').innerText = `Hal ${uiHal}`;
-    document.getElementById('notePenyampai').value = log ? log.penyampai : '';
-    document.getElementById('noteTanggal').value = log ? log.tanggal : new Date().toISOString().split('T')[0];
-    document.getElementById('noteLokasi').value = log ? log.lokasi : '';
-    document.getElementById('noteCatatan').value = log ? log.catatan : '';
+    document.getElementById('notePenyampai').value = log?.penyampai || '';
+    document.getElementById('noteTanggal').value = log?.tanggal || new Date().toISOString().split('T')[0];
+    document.getElementById('noteLokasi').value = log?.lokasi || '';
+    document.getElementById('noteCatatan').value = log?.catatan || '';
     document.getElementById('btnDeleteLog').style.display = log ? 'block' : 'none';
     document.getElementById('fullScreenNote').style.display = 'flex';
   };
