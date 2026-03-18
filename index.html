@@ -14,28 +14,28 @@
     :root { --primary-green: #198754; --bg-light: #f4f7f6; }
     body { background-color: var(--bg-light); font-family: 'Segoe UI', sans-serif; padding-bottom: 90px; }
     
-    /* UI Components */
     .glass-card { background: rgba(255, 255, 255, 0.95); border-radius: 15px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
     .auth-screen { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
     
-    /* Navigation */
     .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
     .nav-item { text-align: center; color: #adb5bd; cursor: pointer; font-size: 0.75rem; font-weight: 600; flex: 1; }
     .nav-item i { font-size: 1.5rem; display: block; }
     .nav-item.active { color: var(--primary-green); }
 
-    /* Grid & Lists */
     .list-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.03); cursor: pointer; border: 1px solid #f8f9fa; }
     .nomor-badge { background: var(--primary-green); color: white; min-width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; }
     .page-btn { width: 55px; height: 55px; border-radius: 12px; border: 2px solid #e9ecef; background: white; font-weight: bold; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
     .page-btn.done { background: var(--primary-green); color: white; border-color: var(--primary-green); box-shadow: 0 4px 8px rgba(25, 135, 84, 0.3); }
 
-    /* Full Screen Note */
     #fullScreenNote { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #f8f9fa; z-index: 2000; display: none; flex-direction: column; animation: slideUp 0.3s ease; }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     
     .view-section { display: none; padding: 20px; }
     .view-section.active { display: block; }
+
+    /* Custom Scrollbar for Accordion */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb { background: #dee2e6; border-radius: 10px; }
   </style>
 </head>
 <body>
@@ -95,7 +95,7 @@
         <input type="text" id="himpNama" class="form-control mb-2" placeholder="Nama Himpunan">
         <input type="text" id="himpTopik" class="form-control mb-2" placeholder="Topik">
         <input type="number" id="himpTotal" class="form-control mb-3" placeholder="Total Halaman">
-        <button class="btn btn-success w-100 fw-bold" onclick="addHimpunan()">Tambah Himpunan Personal</button>
+        <button class="btn btn-success w-100 fw-bold" onclick="addHimpunan()">Tambah Himpunan</button>
     </div>
     <div id="manageList"></div>
   </div>
@@ -246,273 +246,10 @@
     { no: 96, nama: "Al-'Alaq", start: 598, end: 599 },
     { no: 97, nama: "Al-Qadr", start: 599, end: 599 },
     { no: 98, nama: "Al-Bayyinah", start: 599, end: 600 },
-    { no: 99, /* Al-Zalzalah */ nama: "Al-Zalzalah", start: 600, end: 600 },
+    { no: 99, nama: "Al-Zalzalah", start: 600, end: 600 },
     { no: 100, nama: "Al-'Adiyat", start: 600, end: 601 },
     { no: 101, nama: "Al-Qari'ah", start: 601, end: 601 },
     { no: 102, nama: "At-Takatsur", start: 601, end: 601 },
     { no: 103, nama: "Al-'Ashr", start: 602, end: 602 },
     { no: 104, nama: "Al-Humazah", start: 602, end: 602 },
-    { no: 105, nama: "Al-Fil", start: 602, end: 602 },
-    { no: 106, nama: "Quraisy", start: 603, end: 603 },
-    { no: 107, nama: "Al-Ma'un", start: 603, end: 603 },
-    { no: 108, nama: "Al-Kautsar", start: 603, end: 603 },
-    { no: 109, nama: "Al-Kafirun", start: 604, end: 604 },
-    { no: 110, nama: "An-Nashr", start: 604, end: 604 },
-    { no: 111, nama: "Al-Lahab", start: 604, end: 604 },
-    { no: 112, nama: "Al-Ikhlas", start: 605, end: 605 },
-    { no: 113, nama: "Al-Falaq", start: 605, end: 605 },
-    { no: 114, nama: "An-Nas", start: 605, end: 605 }
-  ];
-
-  // --- AUTH LOGIC ---
-  window.toggleAuth = (isReg) => {
-    document.getElementById('loginForm').style.display = isReg ? 'none' : 'block';
-    document.getElementById('registerForm').style.display = isReg ? 'block' : 'none';
-  };
-
-  window.handleRegister = async () => {
-    const name = document.getElementById('nameReg').value;
-    const email = document.getElementById('emailReg').value;
-    const pass = document.getElementById('passReg').value;
-    try {
-      const res = await createUserWithEmailAndPassword(auth, email, pass);
-      await setDoc(doc(db, "users", res.user.uid), { nama: name, email: email, createdAt: new Date() });
-      Swal.fire("Berhasil", "Akun dibuat!", "success");
-    } catch (e) { Swal.fire("Error", e.message, "error"); }
-  };
-
-  window.handleLogin = async () => {
-    const email = document.getElementById('emailIn').value;
-    const pass = document.getElementById('passIn').value;
-    try {
-      await signInWithEmailAndPassword(auth, email, pass);
-    } catch (e) { Swal.fire("Gagal", "Email/Password salah", "error"); }
-  };
-
-  window.handleLogout = () => signOut(auth);
-
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      currentUser = user;
-      document.getElementById('authContainer').style.display = 'none';
-      document.getElementById('mainApp').style.display = 'block';
-      initDataListener();
-    } else {
-      document.getElementById('authContainer').style.display = 'flex';
-      document.getElementById('mainApp').style.display = 'none';
-    }
-  });
-
-  // --- DATA LISTENER (REALTIME) ---
-  function initDataListener() {
-    const qLogs = query(collection(db, "log_progres"), where("uid", "==", currentUser.uid));
-    onSnapshot(qLogs, (snap) => {
-      userLogs = snap.docs.map(d => ({id: d.id, ...d.data()}));
-      renderDashboard();
-      if(activeGrid) renderGrid();
-    });
-
-    const qHimp = query(collection(db, "master_himpunan"), where("uid", "==", currentUser.uid));
-    onSnapshot(qHimp, (snap) => {
-      userHimpunan = snap.docs.map(d => ({id: d.id, ...d.data()}));
-      renderMasterList();
-      renderManageList();
-    });
-  }
-
-  // --- UI LOGIC ---
-  window.switchView = (viewId, el) => {
-    document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById('view-' + viewId).classList.add('active');
-    el.classList.add('active');
-    if(viewId === 'tracker') { closeGrid(); renderMasterList(); }
-  };
-
-  window.changeCetakan = (val) => {
-    currentCetakan = val;
-    localStorage.setItem('cetakanQuran', val);
-    renderMasterList(); 
-    renderDashboard(); 
-  };
-
-  window.switchKategori = (kat) => {
-    currentKategori = kat;
-    document.getElementById('btnKatQuran').className = kat === 'Quran' ? 'btn btn-success active' : 'btn btn-light';
-    document.getElementById('btnKatHimpunan').className = kat === 'Himpunan' ? 'btn btn-success active' : 'btn btn-light';
-    
-    document.getElementById('quranOptions').style.display = kat === 'Quran' ? 'flex' : 'none';
-    document.getElementById('selectCetakan').value = currentCetakan;
-    renderMasterList();
-  };
-
-  function renderMasterList() {
-    const list = document.getElementById('masterList');
-    list.innerHTML = '';
-    
-    if (currentKategori === 'Quran') {
-      quranDb.forEach(q => {
-        let s = q.start;
-        let e = q.end;
-
-        if (currentCetakan === '604') {
-          if (q.no === 1) { 
-             s = 1; e = 1; 
-          } else {
-             s = q.start + 1;
-             e = q.end - 1;
-             if (s > e) {
-               s = q.start - 1; 
-               e = q.end - 1;
-               if (s < 1) s = 1; 
-             }
-          }
-        }
-
-        const card = document.createElement('div');
-        card.className = 'list-card';
-        card.innerHTML = `<div class="nomor-badge">${q.no}</div><div><div class="fw-bold">${q.nama}</div><div class="small text-muted">Halaman ${s} - ${e}</div></div>`;
-        card.onclick = () => openGrid({ nama: q.nama, start: s, end: e, total: e });
-        list.appendChild(card);
-      });
-    } else {
-      userHimpunan.forEach((h, index) => {
-        const card = document.createElement('div');
-        card.className = 'list-card';
-        card.innerHTML = `<div class="nomor-badge">${index + 1}</div><div><div class="fw-bold">${h.nama}</div><div class="small text-muted">${h.topik} • ${h.total} Hal</div></div>`;
-        card.onclick = () => openGrid(h);
-        list.appendChild(card);
-      });
-    }
-  }
-
-  window.openGrid = (item) => {
-    activeGrid = item;
-    document.getElementById('masterList').style.display = 'none';
-    document.getElementById('detailGrid').style.display = 'block';
-    document.getElementById('gridTitle').innerText = item.nama;
-    renderGrid();
-  };
-
-  window.closeGrid = () => {
-    activeGrid = null;
-    document.getElementById('masterList').style.display = 'block';
-    document.getElementById('detailGrid').style.display = 'none';
-  };
-
-  function renderGrid() {
-    const container = document.getElementById('gridContainer');
-    container.innerHTML = '';
-    const start = currentKategori === 'Quran' ? activeGrid.start : 1;
-    const end = currentKategori === 'Quran' ? activeGrid.end : activeGrid.total;
-
-    for (let i = start; i <= end; i++) {
-      const log = userLogs.find(l => l.kat === currentKategori && l.judul === activeGrid.nama && l.hal == i);
-      const btn = document.createElement('div');
-      btn.className = `page-btn ${log ? 'done' : ''}`;
-      btn.innerText = i;
-      btn.onclick = () => openNote(i, log);
-      container.appendChild(btn);
-    }
-  }
-
-  // --- NOTE LOGIC ---
-  let activePage = null;
-  window.openNote = (hal, log) => {
-    activePage = { hal, logId: log ? log.id : null };
-    document.getElementById('noteHeader').innerText = `Hal ${hal}`;
-    document.getElementById('notePenyampai').value = log ? log.penyampai : '';
-    document.getElementById('noteTanggal').value = log ? log.tanggal : new Date().toISOString().split('T')[0];
-    document.getElementById('noteLokasi').value = log ? log.lokasi : '';
-    document.getElementById('noteCatatan').value = log ? log.catatan : '';
-    document.getElementById('btnDeleteLog').style.display = log ? 'block' : 'none';
-    document.getElementById('fullScreenNote').style.display = 'flex';
-  };
-
-  window.closeNote = () => document.getElementById('fullScreenNote').style.display = 'none';
-
-  window.saveNote = async () => {
-    const data = {
-      uid: currentUser.uid,
-      kat: currentKategori,
-      judul: activeGrid.nama,
-      hal: activePage.hal,
-      penyampai: document.getElementById('notePenyampai').value,
-      tanggal: document.getElementById('noteTanggal').value,
-      lokasi: document.getElementById('noteLokasi').value,
-      catatan: document.getElementById('noteCatatan').value,
-      updatedAt: new Date()
-    };
-    
-    try {
-      if(activePage.logId) {
-        await updateDoc(doc(db, "log_progres", activePage.logId), data);
-      } else {
-        await addDoc(collection(db, "log_progres"), data);
-      }
-      closeNote();
-    } catch (e) { alert(e.message); }
-  };
-
-  window.deleteNote = async () => {
-    if(confirm("Hapus progres halaman ini?")) {
-        await deleteDoc(doc(db, "log_progres", activePage.logId));
-        closeNote();
-    }
-  };
-
-  // --- MANAGE & DASHBOARD ---
-  window.addHimpunan = async () => {
-    const nama = document.getElementById('himpNama').value;
-    const topik = document.getElementById('himpTopik').value;
-    const total = document.getElementById('himpTotal').value;
-    if(!nama || !total) return;
-    await addDoc(collection(db, "master_himpunan"), { uid: currentUser.uid, nama, topik, total: parseInt(total) });
-    document.getElementById('himpNama').value = '';
-    document.getElementById('himpTopik').value = '';
-    document.getElementById('himpTotal').value = '';
-  };
-
-  function renderDashboard() {
-    const cont = document.getElementById('dashboardStats');
-    cont.innerHTML = '';
-    
-    const maxHal = currentCetakan === '604' ? 604 : 605;
-    const qDone = userLogs.filter(l => l.kat === 'Quran').length;
-    const qPerc = Math.round((qDone / maxHal) * 100);
-    cont.innerHTML += `<div class="glass-card p-3 mb-3 border-start border-4 border-success">
-        <h6 class="fw-bold text-success">Al-Qur'an</h6>
-        <div class="progress mb-1" style="height:15px"><div class="progress-bar bg-success" style="width:${qPerc}%"></div></div>
-        <small class="text-muted">${qDone}/${maxHal} Halaman (${qPerc}%)</small>
-    </div>`;
-
-    userHimpunan.forEach(h => {
-        const hDone = userLogs.filter(l => l.kat === 'Himpunan' && l.judul === h.nama).length;
-        const hPerc = h.total > 0 ? Math.round((hDone / h.total) * 100) : 0;
-        cont.innerHTML += `<div class="glass-card p-3 mb-3 border-start border-4 border-primary">
-            <h6 class="fw-bold text-primary">${h.nama}</h6>
-            <div class="progress mb-1" style="height:15px"><div class="progress-bar bg-primary" style="width:${hPerc}%"></div></div>
-            <small class="text-muted">${hDone}/${h.total} Halaman (${hPerc}%)</small>
-        </div>`;
-    });
-  }
-
-  function renderManageList() {
-    const list = document.getElementById('manageList');
-    list.innerHTML = '';
-    userHimpunan.forEach(h => {
-        const li = document.createElement('div');
-        li.className = 'list-card justify-content-between';
-        li.innerHTML = `<div><div class="fw-bold">${h.nama}</div><div class="small text-muted">${h.total} Hal</div></div>
-        <button class="btn btn-sm btn-outline-danger" onclick="deleteHimpunan('${h.id}')"><i class="bi bi-trash"></i></button>`;
-        list.appendChild(li);
-    });
-  }
-
-  window.deleteHimpunan = async (id) => {
-    if(confirm("Hapus himpunan ini?")) await deleteDoc(doc(db, "master_himpunan", id));
-  };
-
-</script>
-</body>
-</html>
+    {
