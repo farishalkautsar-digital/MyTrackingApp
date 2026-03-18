@@ -12,46 +12,58 @@
 
   <style>
     :root { --primary-green: #198754; --bg-light: #f4f7f6; }
-    body { background-color: var(--bg-light); font-family: 'Segoe UI', sans-serif; padding-bottom: 90px; transition: background-color 0.3s; }
+    body { background-color: var(--bg-light); font-family: 'Segoe UI', sans-serif; padding-bottom: 90px; transition: background-color 0.3s, color 0.3s; }
     
-    .glass-card { background: rgba(255, 255, 255, 0.95); border-radius: 15px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-    .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
-    .nav-item { text-align: center; color: #adb5bd; cursor: pointer; font-size: 0.75rem; flex: 1; }
+    .glass-card { background: rgba(255, 255, 255, 0.95); border-radius: 15px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: background 0.3s, border 0.3s; }
+    .auth-screen { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; flex-direction: column; }
+    
+    .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; transition: background 0.3s, border-top 0.3s; }
+    .nav-item { text-align: center; color: #adb5bd; cursor: pointer; font-size: 0.75rem; font-weight: 600; flex: 1; transition: color 0.2s; }
     .nav-item i { font-size: 1.5rem; display: block; }
     .nav-item.active { color: var(--primary-green); }
 
-    .list-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; border: 1px solid #f8f9fa; }
+    .list-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.03); cursor: pointer; border: 1px solid #f8f9fa; transition: background 0.3s, border 0.3s; }
     .nomor-badge { background: var(--primary-green); color: white; min-width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; }
     
-    /* Tombol Halaman */
     .page-btn { width: 50px; height: 50px; border-radius: 12px; border: 2px solid #e9ecef; background: white; font-weight: bold; display: flex; align-items: center; justify-content: center; transition: 0.2s; position: relative; }
-    .page-btn.done { background: var(--primary-green); color: white; border-color: var(--primary-green); }
-    .page-btn.selected { background: #ffc107 !important; color: black !important; border-color: #ffc107 !important; transform: scale(0.9); box-shadow: 0 0 10px rgba(255, 193, 7, 0.5); }
+    .page-btn.done { background: var(--primary-green); color: white; border-color: var(--primary-green); box-shadow: 0 4px 8px rgba(25, 135, 84, 0.3); }
+    .page-btn.selected { background: #ffc107 !important; color: black !important; border-color: #ffb300 !important; transform: scale(0.9); }
 
-    #fullScreenNote { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #f8f9fa; z-index: 2000; display: none; flex-direction: column; }
+    #fullScreenNote { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #f8f9fa; z-index: 2000; display: none; flex-direction: column; animation: slideUp 0.3s ease; transition: background 0.3s; }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    
     .view-section { display: none; padding: 20px; }
     .view-section.active { display: block; }
     
-    .credit-text { font-size: 0.65rem; color: #adb5bd; text-align: center; margin-top: 20px; }
+    #bulkActionBtn { position: fixed; bottom: 85px; right: 20px; display: none; z-index: 1500; border-radius: 50px; padding: 12px 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); font-weight: bold; }
 
-    /* Dark Mode */
-    body.dark-mode { background-color: #121212; color: #e0e0e0; }
-    body.dark-mode .glass-card, body.dark-mode .bottom-nav, body.dark-mode .list-card { background: #1e1e1e; border-color: #333; color: white; }
-    body.dark-mode .page-btn { background: #242424; border-color: #444; color: white; }
-    body.dark-mode .form-control { background: #2b2b2b; color: white; border-color: #444; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb { background: #dee2e6; border-radius: 10px; }
     
-    /* Floating Bulk Button */
-    #bulkActionBtn { position: fixed; bottom: 100px; right: 20px; display: none; z-index: 1500; border-radius: 50px; padding: 10px 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+    .credit-text { font-size: 0.65rem; color: #adb5bd; text-align: center; margin-top: 20px; letter-spacing: 0.5px; }
+
+    body.dark-mode { background-color: #121212; color: #e0e0e0; }
+    body.dark-mode .glass-card { background: #1e1e1e; border: 1px solid #2d2d2d; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+    body.dark-mode .bottom-nav { background: #1e1e1e; border-top: 1px solid #2d2d2d; }
+    body.dark-mode .list-card { background: #242424; border: 1px solid #333; color: #e0e0e0; }
+    body.dark-mode .page-btn { background: #242424; border-color: #444; color: #e0e0e0; }
+    body.dark-mode .page-btn.done { background: var(--primary-green); border-color: var(--primary-green); }
+    body.dark-mode #fullScreenNote { background-color: #121212; }
+    body.dark-mode .form-control, body.dark-mode .form-select { background-color: #2b2b2b; border-color: #444; color: #e0e0e0; }
+    body.dark-mode .input-group-text { background-color: #242424; border-color: #444; color: #888; }
+    body.dark-mode .bg-white { background-color: #1e1e1e !important; }
+    body.dark-mode .text-dark { color: #e0e0e0 !important; }
+    body.dark-mode .text-muted { color: #9e9e9e !important; }
   </style>
 </head>
 <body>
 
-<button id="bulkActionBtn" class="btn btn-warning fw-bold animate__animated animate__bounceIn" onclick="window.openBulkNote()">
+<button id="bulkActionBtn" class="btn btn-warning" onclick="window.openBulkNote()">
     <i class="bi bi-pencil-square"></i> Isi <span id="selectedCount">0</span> Halaman
 </button>
 
-<div id="authContainer" class="auth-screen" style="display: flex; height: 100vh; align-items: center; justify-content: center; flex-direction: column;">
-  <div class="glass-card p-4 w-100" style="max-width: 400px;">
+<div id="authContainer" class="auth-screen">
+  <div class="glass-card p-4 w-100 mb-3" style="max-width: 400px;">
     <h3 class="text-center fw-bold text-success mb-4">MaknaTrack</h3>
     <form id="loginForm" onsubmit="window.handleLogin(event)">
       <input type="email" id="emailIn" class="form-control mb-2" placeholder="Email" required>
@@ -62,7 +74,7 @@
     <form id="registerForm" onsubmit="window.handleRegister(event)" style="display: none;">
       <input type="text" id="nameReg" class="form-control mb-2" placeholder="Nama Lengkap" required>
       <input type="email" id="emailReg" class="form-control mb-2" placeholder="Email Baru" required>
-      <input type="password" id="passReg" class="form-control mb-3" placeholder="Password (min 6)" required>
+      <input type="password" id="passReg" class="form-control mb-3" placeholder="Password (min 6 karakter)" minlength="6" required>
       <button type="submit" id="btnReg" class="btn btn-primary w-100 fw-bold mb-3">Buat Akun</button>
       <p class="text-center small">Sudah punya akun? <a href="#" onclick="window.toggleAuth(false)">Login</a></p>
     </form>
@@ -80,7 +92,7 @@
         </div>
     </div>
     <button class="btn btn-sm btn-outline-success w-100 mb-3 fw-bold py-2 rounded-pill" onclick="window.exportToExcel()">
-        <i class="bi bi-file-earmark-spreadsheet"></i> Unduh Jurnal (Excel)
+        <i class="bi bi-file-earmark-spreadsheet"></i> Unduh Laporan Jurnal (Excel)
     </button>
     <div id="dashboardStats"></div>
     <div class="credit-text mt-5">&copy; 2026 | Designed & Engineered by Farish Alkautsar</div>
@@ -100,24 +112,23 @@
     </div>
     <div id="masterList"></div>
     <div id="detailGrid" style="display: none;">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <button class="btn btn-outline-secondary fw-bold" onclick="window.closeGrid()"><i class="bi bi-arrow-left"></i> Kembali</button>
-            <span class="badge bg-warning text-dark px-3 py-2" id="infoBulk" style="display:none;">Pilih beberapa kotak</span>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <button class="btn btn-outline-secondary fw-bold btn-sm" onclick="window.closeGrid()"><i class="bi bi-arrow-left"></i> Kembali</button>
+            <small class="text-muted" id="selectStatus">Klik kotak untuk pilih</small>
         </div>
-        <h5 id="gridTitle" class="fw-bold text-success mb-1"></h5>
-        <p class="small text-muted mb-3">Tips: Klik kotak untuk isi 1 hal. Klik tahan/beberapa untuk isi rombongan.</p>
+        <h5 id="gridTitle" class="fw-bold text-success mb-3"></h5>
         <div class="d-flex flex-wrap gap-2 justify-content-center" id="gridContainer"></div>
     </div>
   </div>
 
   <div id="view-search" class="view-section">
-    <h4 class="fw-bold mb-4">Cari Jejak</h4>
-    <input type="text" id="searchInput" class="form-control mb-4" placeholder="Cari catatan atau kitab..." onkeyup="window.performSearch()">
+    <h4 class="fw-bold mb-4">Pencarian Jurnal</h4>
+    <input type="text" id="searchInput" class="form-control mb-4" placeholder="Cari catatan, kitab, ustaz..." onkeyup="window.performSearch()">
     <div id="searchResults"></div>
   </div>
 
   <div id="view-manage" class="view-section">
-    <h4 class="fw-bold mb-4">Kelola Kitab</h4>
+    <h4 class="fw-bold mb-4">Kelola Data</h4>
     <div id="manageList"></div>
   </div>
 
@@ -136,11 +147,11 @@
         <button class="btn btn-sm btn-warning fw-bold" onclick="window.saveNote()">Simpan</button>
     </div>
     <div class="p-3 flex-grow-1 overflow-auto">
-        <div id="bulkWarning" class="alert alert-warning py-2 small fw-bold mb-3" style="display:none;">⚠️ Mengisi <span id="bulkNum"></span> halaman sekaligus</div>
+        <div id="bulkBadge" class="alert alert-warning py-2 mb-3 small fw-bold" style="display:none;">⚠️ Mengisi <span id="bulkCountTxt"></span> halaman sekaligus</div>
         <input type="text" id="notePenyampai" class="form-control mb-2" placeholder="Penyampai (Mubaligh)">
         <input type="date" id="noteTanggal" class="form-control mb-2">
         <input type="text" id="noteLokasi" class="form-control mb-3" placeholder="Lokasi Ngaji">
-        <textarea id="noteCatatan" class="form-control" style="height: 250px;" placeholder="Tulis makna di sini..."></textarea>
+        <textarea id="noteCatatan" class="form-control" style="height: 300px;" placeholder="Tulis makna di sini..."></textarea>
         <button id="btnDeleteLog" class="btn btn-outline-danger w-100 mt-4" onclick="window.deleteNote()">Hapus Progres</button>
     </div>
 </div>
@@ -164,23 +175,35 @@
   const db = getFirestore(app);
 
   const ADMIN_EMAIL = "farishalkautsar@gmail.com"; 
-  let currentUser = null, userLogs = [], userHimpunan = [], currentKategori = 'Quran', activeGrid = null, currentCetakan = localStorage.getItem('cetakanQuran') || '604', activePage = null, isDarkMode = localStorage.getItem('darkMode') === 'true';
-  let selectedPages = []; // Untuk fitur bulk
+  let currentUser = null, userLogs = [], userHimpunan = [], currentKategori = 'Quran', activeGrid = null, activePage = null, currentCetakan = localStorage.getItem('cetakanQuran') || '604', isDarkMode = localStorage.getItem('darkMode') === 'true';
+  let selectedPages = [];
 
-  // DATA QURAN 604
-  const quranDb = [
-    { no: 1, nama: "Al-Fatihah", start: 1, end: 1 }, { no: 2, nama: "Al-Baqarah", start: 2, end: 49 }, { no: 3, nama: "Ali 'Imran", start: 50, end: 76 }, { no: 4, nama: "An-Nisa'", start: 77, end: 106 }, { no: 5, nama: "Al-Ma'idah", start: 106, end: 127 }, { no: 6, nama: "Al-An'am", start: 128, end: 150 }, { no: 7, nama: "Al-A'raf", start: 151, end: 176 }, { no: 8, nama: "Al-Anfal", start: 177, end: 186 }, { no: 9, nama: "At-Taubah", start: 187, end: 207 }, { no: 10, nama: "Yunus", start: 208, end: 221 }, { no: 11, nama: "Hud", start: 221, end: 235 }, { no: 12, nama: "Yusuf", start: 235, end: 248 }, { no: 13, nama: "Ar-Ra'd", start: 249, end: 255 }, { no: 14, nama: "Ibrahim", start: 255, end: 261 }, { no: 15, nama: "Al-Hijr", start: 262, end: 267 }, { no: 16, nama: "An-Nahl", start: 267, end: 281 }, { no: 17, nama: "Al-Isra'", start: 282, end: 293 }, { no: 18, nama: "Al-Kahf", start: 293, end: 304 }, { no: 19, nama: "Maryam", start: 305, end: 312 }, { no: 20, nama: "Thaha", start: 312, end: 321 }, { no: 21, nama: "Al-Anbiya'", start: 322, end: 331 }, { no: 22, nama: "Al-Hajj", start: 332, end: 341 }, { no: 23, nama: "Al-Mu'minun", start: 342, end: 350 }, { no: 24, nama: "An-Nur", start: 350, end: 359 }, { no: 25, nama: "Al-Furqan", start: 359, end: 366 }, { no: 26, nama: "Asy-Syu'ara'", start: 367, end: 376 }, { no: 27, nama: "An-Naml", start: 377, end: 385 }, { no: 28, nama: "Al-Qashash", start: 385, end: 396 }, { no: 29, nama: "Al-'Ankabut", start: 396, end: 404 }, { no: 30, nama: "Ar-Rum", start: 404, end: 410 }, { no: 31, nama: "Luqman", start: 411, end: 414 }, { no: 32, nama: "As-Sajdah", start: 415, end: 417 }, { no: 33, nama: "Al-Ahzab", start: 418, end: 427 }, { no: 34, nama: "Saba'", start: 428, end: 434 }, { no: 35, nama: "Fathir", start: 434, end: 440 }, { no: 36, nama: "Yasin", start: 440, end: 445 }, { no: 37, nama: "Ash-Shaffat", start: 446, end: 452 }, { no: 38, nama: "Shad", start: 453, end: 458 }, { no: 39, nama: "Az-Zumar", start: 458, end: 467 }, { no: 40, nama: "Ghafir", start: 467, end: 476 }, { no: 41, nama: "Fushshilat", start: 477, end: 482 }, { no: 42, nama: "Asy-Syura", start: 483, end: 489 }, { no: 43, nama: "Az-Zukhruf", start: 489, end: 495 }, { no: 44, nama: "Ad-Dukhan", start: 496, end: 498 }, { no: 45, nama: "Al-Jatsiyah", start: 499, end: 502 }, { no: 46, nama: "Al-Ahqaf", start: 502, end: 506 }, { no: 47, nama: "Muhammad", start: 507, end: 510 }, { no: 48, nama: "Al-Fath", start: 511, end: 515 }, { no: 49, nama: "Al-Hujurat", start: 515, end: 517 }, { no: 50, nama: "Qaf", start: 518, end: 520 }, { no: 51, nama: "Adz-Dzariyat", start: 520, end: 523 }, { no: 52, nama: "Ath-Thur", start: 523, end: 525 }, { no: 53, nama: "An-Najm", start: 526, end: 528 }, { no: 54, nama: "Al-Qamar", start: 528, end: 531 }, { no: 55, nama: "Ar-Rahman", start: 531, end: 534 }, { no: 56, nama: "Al-Waqi'ah", start: 534, end: 537 }, { no: 57, nama: "Al-Hadid", start: 537, end: 541 }, { no: 58, nama: "Al-Mujadilah", start: 542, end: 545 }, { no: 59, nama: "Al-Hasyr", start: 545, end: 548 }, { no: 60, nama: "Al-Mumtahanah", start: 549, end: 551 }, { no: 61, nama: "Ash-Shaff", start: 551, end: 552 }, { no: 62, nama: "Al-Jumu'ah", start: 553, end: 554 }, { no: 63, nama: "Al-Munafiqun", start: 554, end: 555 }, { no: 64, nama: "At-Taghabun", start: 556, end: 557 }, { no: 65, nama: "Ath-Thalaq", start: 558, end: 559 }, { no: 66, nama: "At-Tahrim", start: 560, end: 561 }, { no: 67, nama: "Al-Mulk", start: 562, end: 564 }, { no: 68, nama: "Al-Qalam", start: 564, end: 566 }, { no: 69, nama: "Al-Haqqah", start: 566, end: 568 }, { no: 70, nama: "Al-Ma'arij", start: 568, end: 570 }, { no: 71, nama: "Nuh", start: 570, end: 571 }, { no: 72, nama: "Al-Jinn", start: 573, end: 574 }, { no: 73, nama: "Al-Muzzammil", start: 575, end: 576 }, { no: 74, nama: "Al-Muddatstsir", start: 576, end: 578 }, { no: 75, nama: "Al-Qiyamah", start: 578, end: 579 }, { no: 76, nama: "Al-Insan", start: 579, end: 581 }, { no: 77, nama: "Al-Mursalat", start: 581, end: 582 }, { no: 78, nama: "An-Naba'", start: 583, end: 584 }, { no: 79, nama: "An-Nazi'at", start: 584, end: 585 }, { no: 80, nama: "Abasa", start: 586, end: 586 }, { no: 81, nama: "At-Takwir", start: 587, end: 587 }, { no: 82, nama: "Al-Infithar", start: 588, end: 588 }, { no: 83, nama: "Al-Muthaffifin", start: 588, end: 589 }, { no: 84, nama: "Al-Insyiqaq", start: 590, end: 590 }, { no: 85, nama: "Al-Buruj", start: 591, end: 591 }, { no: 86, nama: "Ath-Thariq", start: 591, end: 591 }, { no: 87, nama: "Al-A'la", start: 591, end: 592 }, { no: 88, nama: "Al-Ghasyiyah", start: 592, end: 592 }, { no: 89, nama: "Al-Fajr", start: 593, end: 594 }, { no: 90, nama: "Al-Balad", start: 594, end: 594 }, { no: 91, nama: "Asy-Syams", start: 595, end: 595 }, { no: 92, nama: "Al-Lail", start: 595, end: 596 }, { no: 93, nama: "Ad-Dhuha", start: 596, end: 596 }, { no: 94, nama: "Al-Insyirah", start: 596, end: 596 }, { no: 95, nama: "At-Tin", start: 597, end: 597 }, { no: 96, nama: "Al-'Alaq", start: 597, end: 598 }, { no: 97, nama: "Al-Qadr", start: 598, end: 598 }, { no: 98, nama: "Al-Bayyinah", start: 598, end: 599 }, { no: 99, nama: "Al-Zalzalah", start: 599, end: 599 }, { no: 100, nama: "Al-'Adiyat", start: 599, end: 600 }, { no: 101, nama: "Al-Qari'ah", start: 600, end: 600 }, { no: 102, nama: "At-Takatsur", start: 600, end: 600 }, { no: 103, nama: "Al-'Ashr", start: 601, end: 601 }, { no: 104, nama: "Al-Humazah", start: 601, end: 601 }, { no: 105, nama: "Al-Fil", start: 601, end: 601 }, { no: 106, nama: "Quraisy", start: 602, end: 602 }, { no: 107, nama: "Al-Ma'un", start: 602, end: 602 }, { no: 108, nama: "Al-Kautsar", start: 602, end: 602 }, { no: 109, nama: "Al-Kafirun", start: 603, end: 603 }, { no: 110, nama: "An-Nashr", start: 603, end: 603 }, { no: 111, nama: "Al-Lahab", start: 603, end: 603 }, { no: 112, nama: "Al-Ikhlas", start: 604, end: 604 }, { no: 113, nama: "Al-Falaq", start: 604, end: 604 }, { no: 114, nama: "An-Nas", start: 604, end: 604 }
-  ];
-
-  // --- UI CORE ---
-  window.toggleAuth = (isReg) => { document.getElementById('loginForm').style.display = isReg ? 'none' : 'block'; document.getElementById('registerForm').style.display = isReg ? 'block' : 'none'; };
-  window.handleLogout = () => signOut(auth);
+  // --- DARK MODE ---
   window.toggleDarkMode = () => { isDarkMode = !isDarkMode; localStorage.setItem('darkMode', isDarkMode); applyDarkMode(); };
   function applyDarkMode() {
       if (isDarkMode) { document.body.classList.add('dark-mode'); document.getElementById('btnDarkMode').innerHTML = '<i class="bi bi-sun"></i>'; }
       else { document.body.classList.remove('dark-mode'); document.getElementById('btnDarkMode').innerHTML = '<i class="bi bi-moon-stars"></i>'; }
   }
   applyDarkMode();
+
+  const quranDb = [
+    { no: 1, nama: "Al-Fatihah", start: 1, end: 1 }, { no: 2, nama: "Al-Baqarah", start: 2, end: 49 }, { no: 3, nama: "Ali 'Imran", start: 50, end: 76 }, { no: 4, nama: "An-Nisa'", start: 77, end: 106 }, { no: 5, nama: "Al-Ma'idah", start: 106, end: 127 }, { no: 6, nama: "Al-An'am", start: 128, end: 150 }, { no: 7, nama: "Al-A'raf", start: 151, end: 176 }, { no: 8, nama: "Al-Anfal", start: 177, end: 186 }, { no: 9, nama: "At-Taubah", start: 187, end: 207 }, { no: 10, nama: "Yunus", start: 208, end: 221 }, { no: 11, nama: "Hud", start: 221, end: 235 }, { no: 12, nama: "Yusuf", start: 235, end: 248 }, { no: 13, nama: "Ar-Ra'd", start: 249, end: 255 }, { no: 14, nama: "Ibrahim", start: 255, end: 261 }, { no: 15, nama: "Al-Hijr", start: 262, end: 267 }, { no: 16, nama: "An-Nahl", start: 267, end: 281 }, { no: 17, nama: "Al-Isra'", start: 282, end: 293 }, { no: 18, nama: "Al-Kahf", start: 293, end: 304 }, { no: 19, nama: "Maryam", start: 305, end: 312 }, { no: 20, nama: "Thaha", start: 312, end: 321 }, { no: 21, nama: "Al-Anbiya'", start: 322, end: 331 }, { no: 22, nama: "Al-Hajj", start: 332, end: 341 }, { no: 23, nama: "Al-Mu'minun", start: 342, end: 350 }, { no: 24, nama: "An-Nur", start: 350, end: 359 }, { no: 25, nama: "Al-Furqan", start: 359, end: 366 }, { no: 26, nama: "Asy-Syu'ara'", start: 367, end: 376 }, { no: 27, nama: "An-Naml", start: 377, end: 385 }, { no: 28, nama: "Al-Qashash", start: 385, end: 396 }, { no: 29, nama: "Al-'Ankabut", start: 396, end: 404 }, { no: 30, nama: "Ar-Rum", start: 404, end: 410 }, { no: 31, nama: "Luqman", start: 411, end: 414 }, { no: 32, nama: "As-Sajdah", start: 415, end: 417 }, { no: 33, nama: "Al-Ahzab", start: 418, end: 427 }, { no: 34, nama: "Saba'", start: 428, end: 434 }, { no: 35, nama: "Fathir", start: 434, end: 440 }, { no: 36, nama: "Yasin", start: 440, end: 445 }, { no: 37, nama: "Ash-Shaffat", start: 446, end: 452 }, { no: 38, nama: "Shad", start: 453, end: 458 }, { no: 39, nama: "Az-Zumar", start: 458, end: 467 }, { no: 40, nama: "Ghafir", start: 467, end: 476 }, { no: 41, nama: "Fushshilat", start: 477, end: 482 }, { no: 42, nama: "Asy-Syura", start: 483, end: 489 }, { no: 43, nama: "Az-Zukhruf", start: 489, end: 495 }, { no: 44, nama: "Ad-Dukhan", start: 496, end: 498 }, { no: 45, nama: "Al-Jatsiyah", start: 499, end: 502 }, { no: 46, nama: "Al-Ahqaf", start: 502, end: 506 }, { no: 47, nama: "Muhammad", start: 507, end: 510 }, { no: 48, nama: "Al-Fath", start: 511, end: 515 }, { no: 49, nama: "Al-Hujurat", start: 515, end: 517 }, { no: 50, nama: "Qaf", start: 518, end: 520 }, { no: 51, nama: "Adz-Dzariyat", start: 520, end: 523 }, { no: 52, nama: "Ath-Thur", start: 523, end: 525 }, { no: 53, nama: "An-Najm", start: 526, end: 528 }, { no: 54, nama: "Al-Qamar", start: 528, end: 531 }, { no: 55, nama: "Ar-Rahman", start: 531, end: 534 }, { no: 56, nama: "Al-Waqi'ah", start: 534, end: 537 }, { no: 57, nama: "Al-Hadid", start: 537, end: 541 }, { no: 58, nama: "Al-Mujadilah", start: 542, end: 545 }, { no: 59, nama: "Al-Hasyr", start: 545, end: 548 }, { no: 60, nama: "Al-Mumtahanah", start: 549, end: 551 }, { no: 61, nama: "Ash-Shaff", start: 551, end: 552 }, { no: 62, nama: "Al-Jumu'ah", start: 553, end: 554 }, { no: 63, nama: "Al-Munafiqun", start: 554, end: 555 }, { no: 64, nama: "At-Taghabun", start: 556, end: 557 }, { no: 65, nama: "Ath-Thalaq", start: 558, end: 559 }, { no: 66, nama: "At-Tahrim", start: 560, end: 561 }, { no: 67, nama: "Al-Mulk", start: 562, end: 564 }, { no: 68, nama: "Al-Qalam", start: 564, end: 566 }, { no: 69, nama: "Al-Haqqah", start: 566, end: 568 }, { no: 70, nama: "Al-Ma'arij", start: 568, end: 570 }, { no: 71, nama: "Nuh", start: 570, end: 571 }, { no: 72, nama: "Al-Jinn", start: 573, end: 574 }, { no: 73, nama: "Al-Muzzammil", start: 575, end: 576 }, { no: 74, nama: "Al-Muddatstsir", start: 576, end: 578 }, { no: 75, nama: "Al-Qiyamah", start: 578, end: 579 }, { no: 76, nama: "Al-Insan", start: 579, end: 581 }, { no: 77, nama: "Al-Mursalat", start: 581, end: 582 }, { no: 78, nama: "An-Naba'", start: 583, end: 584 }, { no: 79, nama: "An-Nazi'at", start: 584, end: 585 }, { no: 80, nama: "Abasa", start: 586, end: 586 }, { no: 81, nama: "At-Takwir", start: 587, end: 587 }, { no: 82, nama: "Al-Infithar", start: 588, end: 588 }, { no: 83, nama: "Al-Muthaffifin", start: 588, end: 589 }, { no: 84, nama: "Al-Insyiqaq", start: 590, end: 590 }, { no: 85, nama: "Al-Buruj", start: 591, end: 591 }, { no: 86, nama: "Ath-Thariq", start: 591, end: 591 }, { no: 87, nama: "Al-A'la", start: 591, end: 592 }, { no: 88, nama: "Al-Ghasyiyah", start: 592, end: 592 }, { no: 89, nama: "Al-Fajr", start: 593, end: 594 }, { no: 90, nama: "Al-Balad", start: 594, end: 594 }, { no: 91, nama: "Asy-Syams", start: 595, end: 595 }, { no: 92, nama: "Al-Lail", start: 595, end: 596 }, { no: 93, nama: "Ad-Dhuha", start: 596, end: 596 }, { no: 94, nama: "Al-Insyirah", start: 596, end: 596 }, { no: 95, nama: "At-Tin", start: 597, end: 597 }, { no: 96, nama: "Al-'Alaq", start: 597, end: 598 }, { no: 97, nama: "Al-Qadr", start: 598, end: 598 }, { no: 98, nama: "Al-Bayyinah", start: 598, end: 599 }, { no: 99, nama: "Al-Zalzalah", start: 599, end: 599 }, { no: 100, nama: "Al-'Adiyat", start: 599, end: 600 }, { no: 101, nama: "Al-Qari'ah", start: 600, end: 600 }, { no: 102, nama: "At-Takatsur", start: 600, end: 600 }, { no: 103, nama: "Al-'Ashr", start: 601, end: 601 }, { no: 104, nama: "Al-Humazah", start: 601, end: 601 }, { no: 105, nama: "Al-Fil", start: 601, end: 601 }, { no: 106, nama: "Quraisy", start: 602, end: 602 }, { no: 107, nama: "Al-Ma'un", start: 602, end: 602 }, { no: 108, nama: "Al-Kautsar", start: 602, end: 602 }, { no: 109, nama: "Al-Kafirun", start: 603, end: 603 }, { no: 110, nama: "An-Nashr", start: 603, end: 603 }, { no: 111, nama: "Al-Lahab", start: 603, end: 603 }, { no: 112, nama: "Al-Ikhlas", start: 604, end: 604 }, { no: 113, nama: "Al-Falaq", start: 604, end: 604 }, { no: 114, nama: "An-Nas", start: 604, end: 604 }
+  ];
+
+  window.toggleAuth = (isReg) => { document.getElementById('loginForm').style.display = isReg ? 'none' : 'block'; document.getElementById('registerForm').style.display = isReg ? 'block' : 'none'; };
+  window.handleLogin = async (e) => {
+    e.preventDefault(); const btn = document.getElementById('btnLogin'); btn.innerHTML = '...';
+    try { await signInWithEmailAndPassword(auth, document.getElementById('emailIn').value, document.getElementById('passIn').value); }
+    catch (err) { Swal.fire("Gagal", "Cek Email/Pass", "error"); btn.innerHTML = 'Masuk'; }
+  };
+  window.handleRegister = async (e) => {
+    e.preventDefault();
+    try {
+        const res = await createUserWithEmailAndPassword(auth, document.getElementById('emailReg').value, document.getElementById('passReg').value);
+        await setDoc(doc(db, "users", res.user.uid), { nama: document.getElementById('nameReg').value, createdAt: new Date() });
+    } catch (err) { alert(err.message); }
+  };
+  window.handleLogout = () => signOut(auth);
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -207,7 +230,8 @@
     if(viewId === 'tracker') { window.closeGrid(); renderMasterList(); }
   };
 
-  // --- GRID LOGIC (BATCH READY) ---
+  window.changeCetakan = (val) => { currentCetakan = val; localStorage.setItem('cetakanQuran', val); renderMasterList(); renderDashboard(); };
+
   window.switchKategori = (kat) => {
     currentKategori = kat; renderMasterList();
     document.getElementById('btnKatQuran').className = kat === 'Quran' ? 'btn btn-success active' : 'btn btn-light';
@@ -219,25 +243,21 @@
     const list = document.getElementById('masterList'); list.innerHTML = '';
     const data = currentKategori === 'Quran' ? quranDb : userHimpunan;
     data.forEach((item, idx) => {
-        let s = item.start, e = item.end;
-        if(currentKategori==='Quran' && currentCetakan==='605') { s++; e++; }
+        let s = item.start, e = item.end; if(currentKategori==='Quran' && currentCetakan==='605') { s++; e++; }
         const card = document.createElement('div'); card.className = 'list-card';
-        card.innerHTML = `<div class="nomor-badge">${currentKategori==='Quran' ? item.no : idx+1}</div><div><div class="fw-bold">${item.nama}</div><div class="small text-muted">Halaman ${s || 1} - ${e || item.total}</div></div>`;
+        card.innerHTML = `<div class="nomor-badge">${currentKategori==='Quran' ? item.no : idx+1}</div><div><div class="fw-bold text-dark">${item.nama}</div><div class="small text-muted">Hal ${s || 1} - ${e || item.total}</div></div>`;
         card.onclick = () => window.openGrid(currentKategori==='Quran' ? {nama:item.nama, start:s, end:e} : item);
         list.appendChild(card);
     });
   }
 
   window.openGrid = (item) => {
-    activeGrid = item; selectedPages = [];
+    activeGrid = item; selectedPages = []; updateBulkUI();
     document.getElementById('masterList').style.display = 'none'; document.getElementById('detailGrid').style.display = 'block';
     document.getElementById('gridTitle').innerText = item.nama; renderGrid();
   };
 
-  window.closeGrid = () => {
-    activeGrid = null; selectedPages = []; updateBulkUI();
-    document.getElementById('masterList').style.display = 'block'; document.getElementById('detailGrid').style.display = 'none';
-  };
+  window.closeGrid = () => { activeGrid = null; selectedPages = []; updateBulkUI(); document.getElementById('masterList').style.display = 'block'; document.getElementById('detailGrid').style.display = 'none'; };
 
   function renderGrid() {
     const container = document.getElementById('gridContainer'); container.innerHTML = '';
@@ -246,49 +266,53 @@
         let stdHal = i; if(currentKategori==='Quran' && currentCetakan==='605') stdHal = i-1;
         const log = userLogs.find(l => l.kat === currentKategori && l.judul === activeGrid.nama && l.hal == stdHal);
         const btn = document.createElement('div');
-        btn.className = `page-btn ${log ? 'done' : ''} ${selectedPages.includes(i) ? 'selected' : ''}`;
+        btn.className = `page-btn ${log ? 'done' : ''} ${selectedPages.some(p => p.ui === i) ? 'selected' : ''}`;
         btn.innerText = i;
-        btn.onclick = () => handlePageClick(i, stdHal, log);
+        btn.onclick = () => handlePageAction(i, stdHal, log);
         container.appendChild(btn);
     }
   }
 
-  function handlePageClick(uiHal, stdHal, log) {
-    if (selectedPages.includes(uiHal)) {
-        selectedPages = selectedPages.filter(p => p !== uiHal);
+  function handlePageAction(uiHal, stdHal, log) {
+    const index = selectedPages.findIndex(p => p.ui === uiHal);
+    if (index > -1) {
+        selectedPages.splice(index, 1);
     } else {
-        selectedPages.push(uiHal);
+        selectedPages.push({ ui: uiHal, std: stdHal, log: log });
     }
+    
     updateBulkUI();
     renderGrid();
 
-    // Jika hanya pilih 1 dan tidak ada yg lain, langsung buka note tunggal (UX Biasa)
-    if (selectedPages.length === 1 && !log) {
-        // Tunggu sebentar siapa tahu mau bulk
+    // Jika hanya klik 1 dan tidak dalam mode milih banyak, langsung buka
+    if (selectedPages.length === 1) {
         setTimeout(() => {
-            if(selectedPages.length === 1) window.openNote(uiHal, stdHal, log);
+            if (selectedPages.length === 1) {
+                const p = selectedPages[0];
+                window.openNote(p.ui, p.std, p.log);
+                selectedPages = []; // Reset agar tidak ganggu
+                updateBulkUI();
+                renderGrid();
+            }
         }, 300);
-    } else if (log && selectedPages.length === 1) {
-        window.openNote(uiHal, stdHal, log);
     }
   }
 
   function updateBulkUI() {
     const btn = document.getElementById('bulkActionBtn');
-    const badge = document.getElementById('infoBulk');
     if (selectedPages.length > 1) {
-        btn.style.display = 'block'; badge.style.display = 'block';
+        btn.style.display = 'block';
         document.getElementById('selectedCount').innerText = selectedPages.length;
     } else {
-        btn.style.display = 'none'; badge.style.display = 'none';
+        btn.style.display = 'none';
     }
   }
 
   window.openBulkNote = () => {
-    activePage = { bulk: true, pages: [...selectedPages] };
+    activePage = { isBulk: true, list: [...selectedPages] };
     document.getElementById('noteHeader').innerText = `Sesi Rombongan`;
-    document.getElementById('bulkWarning').style.display = 'block';
-    document.getElementById('bulkNum').innerText = selectedPages.length;
+    document.getElementById('bulkBadge').style.display = 'block';
+    document.getElementById('bulkCountTxt').innerText = selectedPages.length;
     document.getElementById('notePenyampai').value = '';
     document.getElementById('noteCatatan').value = '';
     document.getElementById('btnDeleteLog').style.display = 'none';
@@ -298,9 +322,10 @@
   window.openNote = (uiHal, stdHal, log) => {
     activePage = { ui: uiHal, std: stdHal, logId: log ? log.id : null };
     document.getElementById('noteHeader').innerText = `Hal ${uiHal}`;
-    document.getElementById('bulkWarning').style.display = 'none';
+    document.getElementById('bulkBadge').style.display = 'none';
     document.getElementById('notePenyampai').value = log?.penyampai || '';
     document.getElementById('noteTanggal').value = log?.tanggal || new Date().toISOString().split('T')[0];
+    document.getElementById('noteLokasi').value = log?.lokasi || '';
     document.getElementById('noteCatatan').value = log?.catatan || '';
     document.getElementById('btnDeleteLog').style.display = log ? 'block' : 'none';
     document.getElementById('fullScreenNote').style.display = 'flex';
@@ -309,61 +334,50 @@
   window.closeNote = () => { document.getElementById('fullScreenNote').style.display = 'none'; selectedPages = []; updateBulkUI(); renderGrid(); };
 
   window.saveNote = async () => {
-    const commonData = {
-        uid: currentUser.uid, kat: currentKategori, judul: activeGrid.nama,
-        penyampai: document.getElementById('notePenyampai').value,
-        tanggal: document.getElementById('noteTanggal').value,
-        lokasi: document.getElementById('noteLokasi').value,
-        catatan: document.getElementById('noteCatatan').value,
-        updatedAt: new Date(),
-        sesiId: Date.now() // ID Unik untuk satu sesi ngaji
-    };
-
+    const common = { uid: currentUser.uid, kat: currentKategori, judul: activeGrid.nama, penyampai: document.getElementById('notePenyampai').value, tanggal: document.getElementById('noteTanggal').value, lokasi: document.getElementById('noteLokasi').value, catatan: document.getElementById('noteCatatan').value, updatedAt: new Date(), sesiId: Date.now() };
     try {
-        if (activePage.bulk) {
-            const batch = writeBatch(db);
-            activePage.pages.forEach(uiHal => {
-                let stdHal = uiHal; if(currentKategori==='Quran' && currentCetakan==='605') stdHal = uiHal-1;
-                const newDocRef = doc(collection(db, "log_progres"));
-                batch.set(newDocRef, { ...commonData, hal: stdHal });
-            });
-            await batch.commit();
-        } else {
-            if(activePage.logId) await updateDoc(doc(db, "log_progres", activePage.logId), { ...commonData, hal: activePage.std });
-            else await addDoc(collection(db, "log_progres"), { ...commonData, hal: activePage.std });
-        }
-        Swal.fire({ icon: 'success', title: 'Tersimpan', timer: 1000, showConfirmButton: false });
-        window.closeNote();
+      if (activePage.isBulk) {
+          const batch = writeBatch(db);
+          activePage.list.forEach(p => {
+              const ref = doc(collection(db, "log_progres"));
+              batch.set(ref, { ...common, hal: p.std });
+          });
+          await batch.commit();
+      } else {
+          if(activePage.logId) await updateDoc(doc(db, "log_progres", activePage.logId), { ...common, hal: activePage.std });
+          else await addDoc(collection(db, "log_progres"), { ...common, hal: activePage.std });
+      }
+      window.closeNote();
     } catch (e) { alert(e.message); }
   };
 
-  // --- DASHBOARD & OTHERS (Sama seperti sebelumnya) ---
   function renderDashboard() {
     const cont = document.getElementById('dashboardStats'); cont.innerHTML = '';
     const uniqueDates = [...new Set(userLogs.map(l => l.tanggal))].sort().reverse();
     let streak = 0, todayStr = new Date().toISOString().split('T')[0];
     if (uniqueDates.includes(todayStr)) {
-        let cur = new Date();
-        while(uniqueDates.includes(cur.toISOString().split('T')[0])) { streak++; cur.setDate(cur.getDate()-1); }
+        let cur = new Date(); while(uniqueDates.includes(cur.toISOString().split('T')[0])) { streak++; cur.setDate(cur.getDate()-1); }
     }
     const lastLog = [...userLogs].sort((a, b) => (b.updatedAt?.toMillis() || 0) - (a.updatedAt?.toMillis() || 0))[0];
 
-    cont.innerHTML = `
-    <div class="row g-2 mb-4">
-        <div class="col-5"><div class="glass-card p-3 text-center h-100">
-            <div style="font-size: 1.8rem;">🔥</div><h3 class="fw-bold m-0">${streak}</h3><small class="text-warning fw-bold small">STREAK</small>
-        </div></div>
-        <div class="col-7"><div class="glass-card p-3 h-100 text-white" style="background: linear-gradient(135deg, #198754, #20c997);" id="resume">
+    cont.innerHTML = `<div class="row g-2 mb-4">
+        <div class="col-5"><div class="glass-card p-3 text-center h-100"><div style="font-size: 1.8rem;">🔥</div><h3 class="fw-bold m-0">${streak}</h3><small class="text-warning fw-bold small">STREAK</small></div></div>
+        <div class="col-7"><div class="glass-card p-3 h-100 text-white" style="background: linear-gradient(135deg, #198754, #20c997); cursor:pointer;" id="resume">
             ${lastLog ? `<small class="small opacity-75">LANJUTKAN</small><div class="fw-bold text-truncate">${lastLog.judul}</div><small>Hal ${lastLog.hal}</small>` : 'Mulai Ngaji'}
-        </div></div>
-    </div>`;
+        </div></div></div>`;
 
-    // Progress Quran
     const qDone = userLogs.filter(l => l.kat==='Quran').length;
     cont.innerHTML += `<div class="glass-card p-3 mb-3 border-start border-4 border-success">
         <div class="d-flex justify-content-between fw-bold mb-1"><span>Quran</span><span>${Math.round(qDone/6.04)}%</span></div>
-        <div class="progress rounded-pill" style="height:8px;"><div class="progress-bar bg-success" style="width:${qDone/6.04}%"></div></div>
-    </div>`;
+        <div class="progress rounded-pill" style="height:8px;"><div class="progress-bar bg-success" style="width:${qDone/6.04}%"></div></div></div>`;
+    
+    userHimpunan.forEach(h => {
+        let done = userLogs.filter(l => l.kat === 'Himpunan' && l.judul === h.nama).length;
+        let p = h.total > 0 ? Math.round((done / h.total) * 100) : 0;
+        cont.innerHTML += `<div class="glass-card p-3 mb-2 border-start border-4 border-primary">
+            <div class="fw-bold text-truncate small">${h.nama}</div>
+            <div class="progress mt-1" style="height:4px;"><div class="progress-bar" style="width:${p}%"></div></div></div>`;
+    });
 
     if(lastLog) document.getElementById('resume').onclick = () => {
         window.switchView('tracker', document.querySelectorAll('.nav-item')[1]);
@@ -372,41 +386,26 @@
     }
   }
 
-  window.handleLogin = async (e) => {
-    e.preventDefault(); const btn = document.getElementById('btnLogin'); btn.innerHTML = '...';
-    try { await signInWithEmailAndPassword(auth, document.getElementById('emailIn').value, document.getElementById('passIn').value); }
-    catch (err) { Swal.fire("Gagal", "Cek Email/Pass", "error"); btn.innerHTML = 'Masuk'; }
-  };
-
-  window.exportToExcel = () => {
-      let csv = "Tanggal,Kitab,Halaman,Penyampai,Catatan\n";
-      userLogs.forEach(l => csv += `${l.tanggal},${l.judul},${l.hal},${l.penyampai},"${l.catatan}"\n`);
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Jurnal_MaknaTrack.csv'; a.click();
-  };
-
-  window.handleRegister = async (e) => {
-    e.preventDefault();
-    try {
-        const res = await createUserWithEmailAndPassword(auth, document.getElementById('emailReg').value, document.getElementById('passReg').value);
-        await setDoc(doc(db, "users", res.user.uid), { nama: document.getElementById('nameReg').value, createdAt: new Date() });
-    } catch (err) { alert(err.message); }
-  };
-
   window.performSearch = () => {
     const q = document.getElementById('searchInput').value.toLowerCase();
     const cont = document.getElementById('searchResults'); cont.innerHTML = '';
-    userLogs.filter(l => l.catatan.toLowerCase().includes(q) || l.judul.toLowerCase().includes(q)).forEach(l => {
+    userLogs.filter(l => (l.catatan||"").toLowerCase().includes(q) || l.judul.toLowerCase().includes(q)).forEach(l => {
         const d = document.createElement('div'); d.className = 'list-card flex-column align-items-start';
-        d.innerHTML = `<div class="fw-bold">${l.judul} - Hal ${l.hal}</div><div class="small italic text-muted">"${l.catatan}"</div>`;
+        d.innerHTML = `<div class="fw-bold text-dark">${l.judul} - Hal ${l.hal}</div><div class="small italic text-muted">"${l.catatan}"</div>`;
         cont.appendChild(d);
     });
   };
 
-  window.changeCetakan = (v) => { currentCetakan = v; localStorage.setItem('cetakanQuran', v); renderMasterList(); renderDashboard(); };
+  window.exportToExcel = () => {
+      let csv = "Tanggal,Kitab,Halaman,Penyampai,Catatan\n";
+      userLogs.forEach(l => csv += `${l.tanggal},${l.judul},${l.hal},${l.penyampai},"${(l.catatan||"").replace(/\n/g," ")}"\n`);
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Jurnal_MaknaTrack.csv'; a.click();
+  };
+
   window.renderManageList = () => {
     const l = document.getElementById('manageList'); l.innerHTML = '';
-    userHimpunan.forEach(h => l.innerHTML += `<div class="list-card justify-content-between"><b>${h.nama}</b> <button class="btn btn-sm btn-danger" onclick="window.deleteHimpunan('${h.id}')">Hapus</button></div>`);
+    userHimpunan.forEach(h => l.innerHTML += `<div class="list-card justify-content-between"><b class="text-dark">${h.nama}</b> <button class="btn btn-sm btn-danger" onclick="window.deleteHimpunan('${h.id}')">Hapus</button></div>`);
   };
   window.deleteHimpunan = async (id) => { if(confirm("Hapus?")) await deleteDoc(doc(db, "master_himpunan", id)); };
   window.deleteNote = async () => { if(confirm("Hapus?")) { await deleteDoc(doc(db, "log_progres", activePage.logId)); window.closeNote(); } };
