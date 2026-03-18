@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#198754">
-  <title>MaknaTrack SaaS - BuildIt!</title>
+  <title>MaknaTrack SaaS - by Farish Alkautsar</title>
   
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
@@ -78,6 +78,7 @@
         <button id="btnKatQuran" class="btn btn-success active" onclick="switchKategori('Quran')">Al-Qur'an</button>
         <button id="btnKatHimpunan" class="btn btn-light" onclick="switchKategori('Himpunan')">Himpunan</button>
     </div>
+    
     <div id="quranOptions" class="mb-3 d-flex justify-content-end align-items-center">
         <label class="small text-muted fw-bold me-2">Cetakan:</label>
         <select id="selectCetakan" class="form-select form-select-sm w-auto shadow-sm" onchange="changeCetakan(this.value)">
@@ -85,7 +86,9 @@
             <option value="604">604 Halaman</option>
         </select>
     </div>
+
     <div id="masterList"></div>
+    
     <div id="detailGrid" style="display: none;">
         <button class="btn btn-light mb-3 fw-bold" onclick="closeGrid()"><i class="bi bi-arrow-left"></i> Kembali</button>
         <h5 id="gridTitle" class="fw-bold text-success mb-3"></h5>
@@ -139,7 +142,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, collection, query, where, onSnapshot, addDoc, deleteDoc, updateDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getFirestore, doc, setDoc, collection, query, where, onSnapshot, addDoc, deleteDoc, updateDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDdRszwvHi8U5YJbrwso1B_1BpNvfoznUU",
@@ -155,7 +158,7 @@
   const db = getFirestore(app);
 
   // ==========================================
-  // ⚠️ GANTI EMAIL INI DENGAN EMAIL LOGIN MAS
+  // EMAIL ADMIN (GANTI JIKA PERLU)
   // ==========================================
   const ADMIN_EMAIL = "farishalkautsar@gmail.com"; 
 
@@ -164,7 +167,7 @@
   let userHimpunan = [];
   let currentKategori = 'Quran';
   let activeGrid = null;
-  let currentCetakan = localStorage.getItem('cetakanQuran') || '605';
+  let currentCetakan = localStorage.getItem('cetakanQuran') || '604'; // Default disamakan dengan array
 
   // ARRAY SINGLE SOURCE OF TRUTH (CETAKAN 604)
   const quranDb = [
@@ -284,6 +287,7 @@
     { no: 114, nama: "An-Nas", start: 605, end: 605 }
   ];
 
+  // --- AUTH LOGIC ---
   window.toggleAuth = (isReg) => {
     document.getElementById('loginForm').style.display = isReg ? 'none' : 'block';
     document.getElementById('registerForm').style.display = isReg ? 'block' : 'none';
@@ -340,6 +344,7 @@
     }
   });
 
+  // --- DATA LISTENER ---
   function initDataListener() {
     // Progress User (Private)
     const qLogs = query(collection(db, "log_progres"), where("uid", "==", currentUser.uid));
@@ -359,6 +364,7 @@
     });
   }
 
+  // --- UI & NAV LOGIC ---
   window.switchView = (viewId, el) => {
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -379,7 +385,7 @@
     document.getElementById('btnKatQuran').className = kat === 'Quran' ? 'btn btn-success active' : 'btn btn-light';
     document.getElementById('btnKatHimpunan').className = kat === 'Himpunan' ? 'btn btn-success active' : 'btn btn-light';
     
-    // Perbaikan Bug: Hapus/Tambah class d-flex dan d-none dari Bootstrap
+    // Perbaikan Bug Bootstrap Keras Kepala: Hapus/Tambah class d-flex dan d-none
     const qOpt = document.getElementById('quranOptions');
     if (kat === 'Quran') {
         qOpt.classList.add('d-flex');
@@ -401,7 +407,7 @@
       quranDb.forEach(q => {
         let s = q.start; let e = q.end;
         
-        // JIKA CETAKAN 605, TERJEMAHKAN KE ATAS (+1)
+        // JIKA CETAKAN 605, TERJEMAHKAN HALAMANNYA KE ATAS (+1)
         if (currentCetakan === '605') {
             s = q.start + 1; e = q.end + 1;
         }
@@ -423,6 +429,7 @@
     }
   }
 
+  // --- GRID LOGIC ---
   window.openGrid = (item) => {
     activeGrid = item;
     document.getElementById('masterList').style.display = 'none';
@@ -446,7 +453,7 @@
     for (let i = start; i <= end; i++) {
       let checkHal = i; 
       
-      // Jika mode 605, translate balik (-1) untuk cari di DB (yg standarnya 604)
+      // Jika mode 605, translate balik (-1) untuk cari di Database (yg standarnya 604)
       if (currentKategori === 'Quran' && currentCetakan === '605') {
           checkHal = i - 1;
       }
@@ -460,6 +467,7 @@
     }
   }
 
+  // --- NOTE LOGIC ---
   let activePage = null;
   window.openNote = (uiHal, stdHal, log) => {
     activePage = { ui: uiHal, std: stdHal, logId: log ? log.id : null };
@@ -504,6 +512,7 @@
     }
   };
 
+  // --- MANAGE HIMPUNAN LOGIC ---
   window.addHimpunan = async () => {
     const nama = document.getElementById('himpNama').value;
     const topik = document.getElementById('himpTopik').value;
@@ -541,7 +550,7 @@
     if (formValues) {
       const newNama = formValues[0].trim();
       const newTopik = formValues[1].trim();
-      const newTotal = parseInt(formValues[2]) || 0; // Jika dikosongkan, otomatis jadi 0
+      const newTotal = parseInt(formValues[2]) || 0;
 
       if (!newNama) {
         return Swal.fire("Gagal", "Nama Himpunan tidak boleh kosong!", "error");
@@ -560,7 +569,7 @@
     }
   };
 
-  // UPDATE FITUR BULK INSERT (Lebih Fleksibel)
+  // FITUR: BULK INSERT
   window.bulkInsertHimpunan = async () => {
     const text = document.getElementById('bulkData').value;
     if(!text) return alert("Data kosong!");
@@ -570,12 +579,11 @@
     
     for(let line of lines) {
         const parts = line.split(',');
-        // Pastikan minimal ada teks (Nama Himpunan)
         if(parts[0] && parts[0].trim() !== '') {
             await addDoc(collection(db, "master_himpunan"), {
                 nama: parts[0].trim(),
-                topik: parts[1] ? parts[1].trim() : '',       // Jika kosong, simpan string kosong
-                total: parts[2] ? parseInt(parts[2].trim()) || 0 : 0, // Jika kosong, simpan angka 0
+                topik: parts[1] ? parts[1].trim() : '',       
+                total: parts[2] ? parseInt(parts[2].trim()) || 0 : 0, 
                 createdAt: new Date()
             });
             count++;
@@ -585,6 +593,62 @@
     document.getElementById('bulkData').value = '';
   };
 
+  // --- RENDER FUNGSI (PENTING) ---
+  function renderDashboard() {
+    const cont = document.getElementById('dashboardStats');
+    
+    const maxHal = currentCetakan === '604' ? 604 : 605;
+    const qDone = userLogs.filter(l => l.kat === 'Quran').length;
+    let qPerc = Math.round((qDone / maxHal) * 100);
+    if(qPerc > 100) qPerc = 100;
+
+    let html = `<div class="glass-card p-3 mb-3 border-start border-4 border-success">
+        <h6 class="fw-bold text-success">Al-Qur'an</h6>
+        <div class="progress mb-1" style="height:15px"><div class="progress-bar bg-success" style="width:${qPerc}%"></div></div>
+        <small class="text-muted fw-bold">${qDone}/${maxHal} Halaman (${qPerc}%)</small>
+        
+        <details class="mt-3">
+            <summary class="text-success fw-bold" style="cursor: pointer; font-size: 0.85rem; outline: none;">
+                <i class="bi bi-list-columns"></i> Lihat Detail Per Surat
+            </summary>
+            <div class="mt-3 pe-2" style="max-height: 250px; overflow-y: auto;">`;
+
+    quranDb.forEach(q => {
+        let totalHal = (q.end - q.start) + 1;
+        const sLogs = userLogs.filter(l => l.kat === 'Quran' && l.judul === q.nama).length;
+        let p = Math.round((sLogs / totalHal) * 100);
+        if(p > 100) p = 100;
+
+        let barColor = p === 100 ? 'bg-success' : 'bg-warning';
+        let opacity = sLogs === 0 ? 'opacity-50' : '';
+
+        html += `
+            <div class="mb-2 ${opacity}">
+                <div class="d-flex justify-content-between small fw-bold text-muted mb-1" style="font-size: 0.75rem;">
+                    <span>${q.no}. ${q.nama}</span>
+                    <span>${sLogs}/${totalHal}</span>
+                </div>
+                <div class="progress" style="height: 5px;">
+                    <div class="progress-bar ${barColor}" style="width: ${p}%"></div>
+                </div>
+            </div>`;
+    });
+
+    html += `</div></details></div>`;
+
+    userHimpunan.forEach(h => {
+        const hDone = userLogs.filter(l => l.kat === 'Himpunan' && l.judul === h.nama).length;
+        const hPerc = h.total > 0 ? Math.round((hDone / h.total) * 100) : 0;
+        html += `<div class="glass-card p-3 mb-3 border-start border-4 border-primary">
+            <h6 class="fw-bold text-primary">${h.nama}</h6>
+            <div class="progress mb-1" style="height:15px"><div class="progress-bar bg-primary" style="width:${hPerc}%"></div></div>
+            <small class="text-muted fw-bold">${hDone}/${h.total} Halaman (${hPerc}%)</small>
+        </div>`;
+    });
+    
+    cont.innerHTML = html;
+  }
+
   function renderManageList() {
     const list = document.getElementById('manageList');
     list.innerHTML = '';
@@ -592,7 +656,7 @@
         const li = document.createElement('div');
         li.className = 'list-card justify-content-between';
         
-        // Membungkus data agar aman saat dikirim ke fungsi edit
+        // Membungkus data agar aman saat dikirim ke fungsi edit (Anti Apostrophe Bug)
         const amanNama = h.nama ? h.nama.replace(/'/g, "\\'") : '';
         const amanTopik = h.topik ? h.topik.replace(/'/g, "\\'") : '';
         const amanTotal = h.total || 0;
