@@ -96,6 +96,22 @@
     </div>
   </div>
 
+  <div id="view-search" class="view-section">
+    <h4 class="fw-bold mb-4">Pencarian Jurnal</h4>
+    <div class="glass-card p-3 mb-4 sticky-top" style="top: 10px; z-index: 100;">
+        <div class="input-group">
+            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" id="searchInput" class="form-control border-start-0 ps-0" placeholder="Ketik kata kunci, nama kitab, atau ustaz..." onkeyup="performSearch()">
+        </div>
+    </div>
+    <div id="searchResults">
+        <div class="text-center text-muted mt-5 small">
+            <i class="bi bi-journal-text" style="font-size: 3rem;"></i><br><br>
+            Ketik kata kunci untuk mencari jejak ngaji Mas...
+        </div>
+    </div>
+  </div>
+
   <div id="view-manage" class="view-section">
     <h4 class="fw-bold mb-4">Kelola Data Global</h4>
     
@@ -120,6 +136,7 @@
   <div class="bottom-nav">
     <div class="nav-item active" onclick="switchView('dashboard', this)"><i class="bi bi-house-door"></i>Home</div>
     <div class="nav-item" onclick="switchView('tracker', this)"><i class="bi bi-card-checklist"></i>Track</div>
+    <div class="nav-item" onclick="switchView('search', this)"><i class="bi bi-search"></i>Cari</div>
     <div class="nav-item" id="navManage" onclick="switchView('manage', this)"><i class="bi bi-gear"></i>Kelola</div>
   </div>
 </div>
@@ -256,35 +273,35 @@
     { no: 83, nama: "Al-Muthaffifin", start: 588, end: 589 },
     { no: 84, nama: "Al-Insyiqaq", start: 590, end: 590 },
     { no: 85, nama: "Al-Buruj", start: 591, end: 591 },
-    { no: 86, nama: "Ath-Thariq", start: 592, end: 592 },
-    { no: 87, nama: "Al-A'la", start: 592, end: 593 },
-    { no: 88, nama: "Al-Ghasyiyah", start: 593, end: 593 },
-    { no: 89, nama: "Al-Fajr", start: 594, end: 595 },
-    { no: 90, nama: "Al-Balad", start: 595, end: 595 },
-    { no: 91, nama: "Asy-Syams", start: 596, end: 596 },
-    { no: 92, nama: "Al-Lail", start: 596, end: 597 },
-    { no: 93, nama: "Ad-Dhuha", start: 597, end: 597 },
-    { no: 94, nama: "Al-Insyirah", start: 597, end: 597 },
-    { no: 95, nama: "At-Tin", start: 598, end: 598 },
-    { no: 96, nama: "Al-'Alaq", start: 598, end: 599 },
-    { no: 97, nama: "Al-Qadr", start: 599, end: 599 },
-    { no: 98, nama: "Al-Bayyinah", start: 599, end: 600 },
-    { no: 99, nama: "Al-Zalzalah", start: 600, end: 600 },
-    { no: 100, nama: "Al-'Adiyat", start: 600, end: 601 },
-    { no: 101, nama: "Al-Qari'ah", start: 601, end: 601 },
-    { no: 102, nama: "At-Takatsur", start: 601, end: 601 },
-    { no: 103, nama: "Al-'Ashr", start: 602, end: 602 },
-    { no: 104, nama: "Al-Humazah", start: 602, end: 602 },
-    { no: 105, nama: "Al-Fil", start: 602, end: 602 },
-    { no: 106, nama: "Quraisy", start: 603, end: 603 },
-    { no: 107, nama: "Al-Ma'un", start: 603, end: 603 },
-    { no: 108, nama: "Al-Kautsar", start: 603, end: 603 },
-    { no: 109, nama: "Al-Kafirun", start: 604, end: 604 },
-    { no: 110, nama: "An-Nashr", start: 604, end: 604 },
-    { no: 111, nama: "Al-Lahab", start: 604, end: 604 },
-    { no: 112, nama: "Al-Ikhlas", start: 605, end: 605 },
-    { no: 113, nama: "Al-Falaq", start: 605, end: 605 },
-    { no: 114, nama: "An-Nas", start: 605, end: 605 }
+    { no: 86, nama: "Ath-Thariq", start: 591, end: 591 },
+    { no: 87, nama: "Al-A'la", start: 591, end: 592 },
+    { no: 88, nama: "Al-Ghasyiyah", start: 592, end: 592 },
+    { no: 89, nama: "Al-Fajr", start: 593, end: 594 },
+    { no: 90, nama: "Al-Balad", start: 594, end: 594 },
+    { no: 91, nama: "Asy-Syams", start: 595, end: 595 },
+    { no: 92, nama: "Al-Lail", start: 595, end: 596 },
+    { no: 93, nama: "Ad-Dhuha", start: 596, end: 596 },
+    { no: 94, nama: "Al-Insyirah", start: 596, end: 596 },
+    { no: 95, nama: "At-Tin", start: 597, end: 597 },
+    { no: 96, nama: "Al-'Alaq", start: 597, end: 598 },
+    { no: 97, nama: "Al-Qadr", start: 598, end: 598 },
+    { no: 98, nama: "Al-Bayyinah", start: 598, end: 599 },
+    { no: 99, nama: "Al-Zalzalah", start: 599, end: 599 },
+    { no: 100, nama: "Al-'Adiyat", start: 599, end: 600 },
+    { no: 101, nama: "Al-Qari'ah", start: 600, end: 600 },
+    { no: 102, nama: "At-Takatsur", start: 600, end: 600 },
+    { no: 103, nama: "Al-'Ashr", start: 601, end: 601 },
+    { no: 104, nama: "Al-Humazah", start: 601, end: 601 },
+    { no: 105, nama: "Al-Fil", start: 601, end: 601 },
+    { no: 106, nama: "Quraisy", start: 602, end: 602 },
+    { no: 107, nama: "Al-Ma'un", start: 602, end: 602 },
+    { no: 108, nama: "Al-Kautsar", start: 602, end: 602 },
+    { no: 109, nama: "Al-Kafirun", start: 603, end: 603 },
+    { no: 110, nama: "An-Nashr", start: 603, end: 603 },
+    { no: 111, nama: "Al-Lahab", start: 603, end: 603 },
+    { no: 112, nama: "Al-Ikhlas", start: 604, end: 604 },
+    { no: 113, nama: "Al-Falaq", start: 604, end: 604 },
+    { no: 114, nama: "An-Nas", start: 604, end: 604 }
   ];
 
   // --- AUTH LOGIC ---
@@ -360,7 +377,7 @@
       userHimpunan = snap.docs.map(d => ({id: d.id, ...d.data()}));
       renderMasterList();
       renderManageList();
-      renderDashboard(); // Render ulang grafik dashboard
+      renderDashboard(); 
     });
   }
 
@@ -526,7 +543,6 @@
     document.getElementById('himpTotal').value = '';
   };
 
-  // FITUR BARU: EDIT HIMPUNAN
   window.editHimpunan = async (id, oldNama, oldTopik, oldTotal) => {
     const { value: formValues } = await Swal.fire({
       title: 'Edit Himpunan',
@@ -569,7 +585,6 @@
     }
   };
 
-  // FITUR: BULK INSERT
   window.bulkInsertHimpunan = async () => {
     const text = document.getElementById('bulkData').value;
     if(!text) return alert("Data kosong!");
@@ -593,7 +608,7 @@
     document.getElementById('bulkData').value = '';
   };
 
-  // --- RENDER FUNGSI (PENTING) ---
+  // --- RENDER FUNGSI ---
   function renderDashboard() {
     const cont = document.getElementById('dashboardStats');
     
@@ -656,7 +671,6 @@
         const li = document.createElement('div');
         li.className = 'list-card justify-content-between';
         
-        // Membungkus data agar aman saat dikirim ke fungsi edit (Anti Apostrophe Bug)
         const amanNama = h.nama ? h.nama.replace(/'/g, "\\'") : '';
         const amanTopik = h.topik ? h.topik.replace(/'/g, "\\'") : '';
         const amanTotal = h.total || 0;
@@ -673,6 +687,74 @@
         list.appendChild(li);
     });
   }
+
+  // --- FITUR BARU: SMART SEARCH (ZERO-LOADING) ---
+  window.performSearch = () => {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    const container = document.getElementById('searchResults');
+    
+    // Jika kolom pencarian kosong
+    if (!query || query.trim() === '') {
+        container.innerHTML = `
+        <div class="text-center text-muted mt-5 small">
+            <i class="bi bi-journal-text" style="font-size: 3rem;"></i><br><br>
+            Ketik kata kunci untuk mencari jejak ngaji Mas...
+        </div>`;
+        return;
+    }
+
+    // Filter array userLogs (mencari kecocokan di judul, catatan, penyampai, atau lokasi)
+    const results = userLogs.filter(log => {
+        const textToSearch = `${log.judul} ${log.catatan} ${log.penyampai} ${log.lokasi}`.toLowerCase();
+        return textToSearch.includes(query);
+    });
+
+    // Jika tidak ada hasil
+    if (results.length === 0) {
+        container.innerHTML = '<div class="text-center text-danger mt-5 small fw-bold">Tidak ada catatan yang cocok.</div>';
+        return;
+    }
+
+    container.innerHTML = '';
+    
+    // Tampilkan hasil dari yang terbaru
+    results.reverse().forEach(log => {
+        let uiHal = log.hal;
+        
+        // Sesuaikan tampilan halaman Al-Quran jika user sedang pakai mode 605
+        if (log.kat === 'Quran' && currentCetakan === '605') {
+            uiHal = log.hal + 1;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'list-card flex-column align-items-start mb-3';
+        card.style.cursor = 'pointer';
+        card.style.borderLeft = log.kat === 'Quran' ? '4px solid #198754' : '4px solid #0d6efd';
+        
+        // Memungkinkan user mengklik hasil pencarian untuk langsung membuka/mengedit catatannya
+        card.onclick = () => {
+            activeGrid = { nama: log.judul, start: log.hal, end: log.hal, total: 1 };
+            currentKategori = log.kat;
+            openNote(uiHal, log.hal, log);
+        };
+
+        card.innerHTML = `
+            <div class="d-flex w-100 justify-content-between align-items-center mb-2">
+                <span class="badge bg-${log.kat === 'Quran' ? 'success' : 'primary'}">${log.kat}</span>
+                <small class="text-muted"><i class="bi bi-calendar-event"></i> ${log.tanggal || '-'}</small>
+            </div>
+            <div class="fw-bold text-dark mb-1">${log.judul} • Hal ${uiHal}</div>
+            <div class="small text-secondary mb-2">
+                <i class="bi bi-person"></i> ${log.penyampai || 'Tanpa Penyampai'} | 
+                <i class="bi bi-geo-alt"></i> ${log.lokasi || '-'}
+            </div>
+            <div class="small text-dark border-start border-2 border-secondary ps-2 text-wrap" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-style: italic;">
+                "${log.catatan || 'Tidak ada teks catatan'}"
+            </div>
+        `;
+        container.appendChild(card);
+    });
+  };
 
 </script>
 </body>
