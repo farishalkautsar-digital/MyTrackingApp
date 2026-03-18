@@ -517,7 +517,50 @@
     document.getElementById('himpTotal').value = '';
   };
 
-  // FITUR RAHASIA: BULK INSERT
+  // FITUR BARU: EDIT HIMPUNAN
+  window.editHimpunan = async (id, oldNama, oldTopik, oldTotal) => {
+    const { value: formValues } = await Swal.fire({
+      title: 'Edit Himpunan',
+      html:
+        `<input id="swal-nama" class="form-control mb-2" placeholder="Nama Himpunan" value="${oldNama}">` +
+        `<input id="swal-topik" class="form-control mb-2" placeholder="Topik (Opsional)" value="${oldTopik}">` +
+        `<input id="swal-total" type="number" class="form-control" placeholder="Total Halaman" value="${oldTotal}">`,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Simpan Perubahan',
+      cancelButtonText: 'Batal',
+      preConfirm: () => {
+        return [
+          document.getElementById('swal-nama').value,
+          document.getElementById('swal-topik').value,
+          document.getElementById('swal-total').value
+        ]
+      }
+    });
+
+    if (formValues) {
+      const newNama = formValues[0].trim();
+      const newTopik = formValues[1].trim();
+      const newTotal = parseInt(formValues[2]) || 0; // Jika dikosongkan, otomatis jadi 0
+
+      if (!newNama) {
+        return Swal.fire("Gagal", "Nama Himpunan tidak boleh kosong!", "error");
+      }
+
+      try {
+        await updateDoc(doc(db, "master_himpunan", id), {
+          nama: newNama,
+          topik: newTopik,
+          total: newTotal
+        });
+        Swal.fire("Berhasil", "Data himpunan diperbarui!", "success");
+      } catch (e) {
+        Swal.fire("Error", e.message, "error");
+      }
+    }
+  };
+
+  // UPDATE FITUR BULK INSERT (Lebih Fleksibel)
   window.bulkInsertHimpunan = async () => {
     const text = document.getElementById('bulkData').value;
     if(!text) return alert("Data kosong!");
@@ -527,11 +570,12 @@
     
     for(let line of lines) {
         const parts = line.split(',');
-        if(parts.length >= 3) {
+        // Pastikan minimal ada teks (Nama Himpunan)
+        if(parts[0] && parts[0].trim() !== '') {
             await addDoc(collection(db, "master_himpunan"), {
                 nama: parts[0].trim(),
-                topik: parts[1].trim(),
-                total: parseInt(parts[2].trim()),
+                topik: parts[1] ? parts[1].trim() : '',       // Jika kosong, simpan string kosong
+                total: parts[2] ? parseInt(parts[2].trim()) || 0 : 0, // Jika kosong, simpan angka 0
                 createdAt: new Date()
             });
             count++;
@@ -541,76 +585,30 @@
     document.getElementById('bulkData').value = '';
   };
 
-  function renderDashboard() {
-    const cont = document.getElementById('dashboardStats');
-    
-    const maxHal = currentCetakan === '604' ? 604 : 605;
-    const qDone = userLogs.filter(l => l.kat === 'Quran').length;
-    let qPerc = Math.round((qDone / maxHal) * 100);
-    if(qPerc > 100) qPerc = 100;
-
-    let html = `<div class="glass-card p-3 mb-3 border-start border-4 border-success">
-        <h6 class="fw-bold text-success">Al-Qur'an</h6>
-        <div class="progress mb-1" style="height:15px"><div class="progress-bar bg-success" style="width:${qPerc}%"></div></div>
-        <small class="text-muted fw-bold">${qDone}/${maxHal} Halaman (${qPerc}%)</small>
-        
-        <details class="mt-3">
-            <summary class="text-success fw-bold" style="cursor: pointer; font-size: 0.85rem; outline: none;">
-                <i class="bi bi-list-columns"></i> Lihat Detail Per Surat
-            </summary>
-            <div class="mt-3 pe-2" style="max-height: 250px; overflow-y: auto;">`;
-
-    quranDb.forEach(q => {
-        let totalHal = (q.end - q.start) + 1;
-        const sLogs = userLogs.filter(l => l.kat === 'Quran' && l.judul === q.nama).length;
-        let p = Math.round((sLogs / totalHal) * 100);
-        if(p > 100) p = 100;
-
-        let barColor = p === 100 ? 'bg-success' : 'bg-warning';
-        let opacity = sLogs === 0 ? 'opacity-50' : '';
-
-        html += `
-            <div class="mb-2 ${opacity}">
-                <div class="d-flex justify-content-between small fw-bold text-muted mb-1" style="font-size: 0.75rem;">
-                    <span>${q.no}. ${q.nama}</span>
-                    <span>${sLogs}/${totalHal}</span>
-                </div>
-                <div class="progress" style="height: 5px;">
-                    <div class="progress-bar ${barColor}" style="width: ${p}%"></div>
-                </div>
-            </div>`;
-    });
-
-    html += `</div></details></div>`;
-
-    userHimpunan.forEach(h => {
-        const hDone = userLogs.filter(l => l.kat === 'Himpunan' && l.judul === h.nama).length;
-        const hPerc = h.total > 0 ? Math.round((hDone / h.total) * 100) : 0;
-        html += `<div class="glass-card p-3 mb-3 border-start border-4 border-primary">
-            <h6 class="fw-bold text-primary">${h.nama}</h6>
-            <div class="progress mb-1" style="height:15px"><div class="progress-bar bg-primary" style="width:${hPerc}%"></div></div>
-            <small class="text-muted fw-bold">${hDone}/${h.total} Halaman (${hPerc}%)</small>
-        </div>`;
-    });
-    
-    cont.innerHTML = html;
-  }
-
   function renderManageList() {
     const list = document.getElementById('manageList');
     list.innerHTML = '';
     userHimpunan.forEach(h => {
         const li = document.createElement('div');
         li.className = 'list-card justify-content-between';
-        li.innerHTML = `<div><div class="fw-bold">${h.nama}</div><div class="small text-muted">${h.total} Hal</div></div>
-        <button class="btn btn-sm btn-outline-danger" onclick="deleteHimpunan('${h.id}')"><i class="bi bi-trash"></i></button>`;
+        
+        // Membungkus data agar aman saat dikirim ke fungsi edit
+        const amanNama = h.nama ? h.nama.replace(/'/g, "\\'") : '';
+        const amanTopik = h.topik ? h.topik.replace(/'/g, "\\'") : '';
+        const amanTotal = h.total || 0;
+
+        li.innerHTML = `
+        <div class="flex-grow-1">
+            <div class="fw-bold">${h.nama}</div>
+            <div class="small text-muted">${h.topik || 'Belum ada topik'} • ${h.total || 0} Hal</div>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-primary" onclick="editHimpunan('${h.id}', '${amanNama}', '${amanTopik}', ${amanTotal})"><i class="bi bi-pencil"></i></button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteHimpunan('${h.id}')"><i class="bi bi-trash"></i></button>
+        </div>`;
         list.appendChild(li);
     });
   }
-
-  window.deleteHimpunan = async (id) => {
-    if(confirm("Hapus himpunan ini dari Server Global?")) await deleteDoc(doc(db, "master_himpunan", id));
-  };
 
 </script>
 </body>
