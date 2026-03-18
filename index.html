@@ -15,7 +15,7 @@
     body { background-color: var(--bg-light); font-family: 'Segoe UI', sans-serif; padding-bottom: 90px; }
     
     .glass-card { background: rgba(255, 255, 255, 0.95); border-radius: 15px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-    .auth-screen { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .auth-screen { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; flex-direction: column; }
     
     .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
     .nav-item { text-align: center; color: #adb5bd; cursor: pointer; font-size: 0.75rem; font-weight: 600; flex: 1; }
@@ -33,16 +33,18 @@
     .view-section { display: none; padding: 20px; }
     .view-section.active { display: block; }
 
-    /* Custom Scrollbar for Accordion */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-thumb { background: #dee2e6; border-radius: 10px; }
+    
+    .credit-text { font-size: 0.65rem; color: #adb5bd; text-align: center; margin-top: 20px; letter-spacing: 0.5px; }
   </style>
 </head>
 <body>
 
 <div id="authContainer" class="auth-screen">
-  <div class="glass-card p-4 w-100" style="max-width: 400px;">
+  <div class="glass-card p-4 w-100 mb-3" style="max-width: 400px;">
     <h3 class="text-center fw-bold text-success mb-4">MyTracker</h3>
+    
     <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();">
       <input type="email" id="emailIn" class="form-control mb-2" placeholder="Email" required>
       <input type="password" id="passIn" class="form-control mb-3" placeholder="Password" required>
@@ -58,6 +60,7 @@
       <p class="text-center small">Sudah punya akun? <a href="#" onclick="toggleAuth(false)">Login</a></p>
     </form>
   </div>
+  <div class="credit-text">&copy; 2026 | Designed & Engineered by Farish Alkautsar</div>
 </div>
 
 <div id="mainApp" style="display: none;">
@@ -66,8 +69,8 @@
         <h4 class="fw-bold m-0">Dashboard</h4>
         <button class="btn btn-sm btn-outline-danger" onclick="handleLogout()"><i class="bi bi-box-arrow-right"></i></button>
     </div>
-    <div id="dashboardStats">
-        </div>
+    <div id="dashboardStats"></div>
+    <div class="credit-text mt-5">&copy; 2026 | Designed & Engineered by Farish Alkautsar</div>
   </div>
 
   <div id="view-tracker" class="view-section">
@@ -91,20 +94,30 @@
   </div>
 
   <div id="view-manage" class="view-section">
-    <h4 class="fw-bold mb-4">Kelola Himpunan</h4>
+    <h4 class="fw-bold mb-4">Kelola Data Global</h4>
+    
     <div class="glass-card p-3 mb-4">
+        <h6 class="fw-bold text-primary mb-3"><i class="bi bi-journal-plus"></i> Tambah Satuan</h6>
         <input type="text" id="himpNama" class="form-control mb-2" placeholder="Nama Himpunan">
         <input type="text" id="himpTopik" class="form-control mb-2" placeholder="Topik">
         <input type="number" id="himpTotal" class="form-control mb-3" placeholder="Total Halaman">
-        <button class="btn btn-success w-100 fw-bold" onclick="addHimpunan()">Tambah Himpunan</button>
+        <button class="btn btn-success w-100 fw-bold" onclick="addHimpunan()">Simpan ke Server</button>
     </div>
+
+    <div class="glass-card p-3 mb-4 border-start border-4 border-warning">
+        <h6 class="fw-bold text-warning mb-3"><i class="bi bi-lightning-charge"></i> Bulk Insert (Cepat)</h6>
+        <p class="small text-muted mb-2">Format: <b>Nama, Topik, Total</b> (Pisahkan dengan Enter)</p>
+        <textarea id="bulkData" class="form-control mb-3" rows="3" placeholder="Contoh:&#10;Kitabus Sholah, Bab Sholat, 151&#10;Kitabu Da'awat, Bab Doa, 120"></textarea>
+        <button class="btn btn-warning w-100 fw-bold" onclick="bulkInsertHimpunan()">Eksekusi Bulk Insert</button>
+    </div>
+
     <div id="manageList"></div>
   </div>
 
   <div class="bottom-nav">
     <div class="nav-item active" onclick="switchView('dashboard', this)"><i class="bi bi-house-door"></i>Home</div>
     <div class="nav-item" onclick="switchView('tracker', this)"><i class="bi bi-card-checklist"></i>Track</div>
-    <div class="nav-item" onclick="switchView('manage', this)"><i class="bi bi-gear"></i>Kelola</div>
+    <div class="nav-item" id="navManage" onclick="switchView('manage', this)"><i class="bi bi-gear"></i>Kelola</div>
   </div>
 </div>
 
@@ -115,10 +128,10 @@
         <button class="btn btn-sm btn-warning fw-bold" onclick="saveNote()">Simpan</button>
     </div>
     <div class="p-3 flex-grow-1 overflow-auto">
-        <input type="text" id="notePenyampai" class="form-control mb-2" placeholder="Penyampai">
+        <input type="text" id="notePenyampai" class="form-control mb-2" placeholder="Penyampai (Mubaligh)">
         <input type="date" id="noteTanggal" class="form-control mb-2">
-        <input type="text" id="noteLokasi" class="form-control mb-3" placeholder="Lokasi">
-        <textarea id="noteCatatan" class="form-control" style="height: 300px;" placeholder="Tulis makna/keterangan..."></textarea>
+        <input type="text" id="noteLokasi" class="form-control mb-3" placeholder="Lokasi Ngaji">
+        <textarea id="noteCatatan" class="form-control" style="height: 300px;" placeholder="Tulis makna/keterangan di sini..."></textarea>
         <button id="btnDeleteLog" class="btn btn-outline-danger w-100 mt-4" onclick="deleteNote()">Hapus Progres Halaman Ini</button>
     </div>
 </div>
@@ -126,7 +139,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, collection, query, where, onSnapshot, addDoc, deleteDoc, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getFirestore, doc, setDoc, getDoc, collection, query, where, onSnapshot, addDoc, deleteDoc, updateDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDdRszwvHi8U5YJbrwso1B_1BpNvfoznUU",
@@ -141,6 +154,11 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
+  // ==========================================
+  // ⚠️ GANTI EMAIL INI DENGAN EMAIL LOGIN MAS
+  // ==========================================
+  const ADMIN_EMAIL = "farishalkautsar@gmail.com"; 
+
   let currentUser = null;
   let userLogs = [];
   let userHimpunan = [];
@@ -148,78 +166,79 @@
   let activeGrid = null;
   let currentCetakan = localStorage.getItem('cetakanQuran') || '605';
 
+  // ARRAY SINGLE SOURCE OF TRUTH (CETAKAN 604)
   const quranDb = [
     { no: 1, nama: "Al-Fatihah", start: 1, end: 1 },
-    { no: 2, nama: "Al-Baqarah", start: 3, end: 50 },
-    { no: 3, nama: "Ali 'Imran", start: 51, end: 77 },
-    { no: 4, nama: "An-Nisa'", start: 78, end: 107 },
-    { no: 5, nama: "Al-Ma'idah", start: 107, end: 128 },
-    { no: 6, nama: "Al-An'am", start: 129, end: 151 },
-    { no: 7, nama: "Al-A'raf", start: 152, end: 177 },
-    { no: 8, nama: "Al-Anfal", start: 178, end: 187 },
-    { no: 9, nama: "At-Taubah", start: 188, end: 208 },
-    { no: 10, nama: "Yunus", start: 209, end: 222 },
-    { no: 11, nama: "Hud", start: 222, end: 236 },
-    { no: 12, nama: "Yusuf", start: 236, end: 249 },
-    { no: 13, nama: "Ar-Ra'd", start: 250, end: 256 },
-    { no: 14, nama: "Ibrahim", start: 256, end: 262 },
-    { no: 15, nama: "Al-Hijr", start: 263, end: 268 },
-    { no: 16, nama: "An-Nahl", start: 268, end: 282 },
-    { no: 17, nama: "Al-Isra'", start: 283, end: 294 },
-    { no: 18, nama: "Al-Kahf", start: 294, end: 305 },
-    { no: 19, nama: "Maryam", start: 306, end: 313 },
-    { no: 20, nama: "Thaha", start: 313, end: 322 },
-    { no: 21, nama: "Al-Anbiya'", start: 323, end: 332 },
-    { no: 22, nama: "Al-Hajj", start: 333, end: 342 },
-    { no: 23, nama: "Al-Mu'minun", start: 343, end: 351 },
-    { no: 24, nama: "An-Nur", start: 351, end: 360 },
-    { no: 25, nama: "Al-Furqan", start: 360, end: 367 },
-    { no: 26, nama: "Asy-Syu'ara'", start: 368, end: 377 },
-    { no: 27, nama: "An-Naml", start: 378, end: 386 },
-    { no: 28, nama: "Al-Qashash", start: 386, end: 397 },
-    { no: 29, nama: "Al-'Ankabut", start: 397, end: 405 },
-    { no: 30, nama: "Ar-Rum", start: 405, end: 411 },
-    { no: 31, nama: "Luqman", start: 412, end: 415 },
-    { no: 32, nama: "As-Sajdah", start: 416, end: 418 },
-    { no: 33, nama: "Al-Ahzab", start: 419, end: 428 },
-    { no: 34, nama: "Saba'", start: 429, end: 435 },
-    { no: 35, nama: "Fathir", start: 435, end: 441 },
-    { no: 36, nama: "Yasin", start: 441, end: 446 },
-    { no: 37, nama: "Ash-Shaffat", start: 447, end: 453 },
-    { no: 38, nama: "Shad", start: 454, end: 459 },
-    { no: 39, nama: "Az-Zumar", start: 459, end: 468 },
-    { no: 40, nama: "Ghafir", start: 468, end: 477 },
-    { no: 41, nama: "Fushshilat", start: 478, end: 483 },
-    { no: 42, nama: "Asy-Syura", start: 484, end: 490 },
-    { no: 43, nama: "Az-Zukhruf", start: 490, end: 496 },
-    { no: 44, nama: "Ad-Dukhan", start: 497, end: 499 },
-    { no: 45, nama: "Al-Jatsiyah", start: 500, end: 503 },
-    { no: 46, nama: "Al-Ahqaf", start: 503, end: 507 },
-    { no: 47, nama: "Muhammad", start: 508, end: 511 },
-    { no: 48, nama: "Al-Fath", start: 512, end: 516 },
-    { no: 49, nama: "Al-Hujurat", start: 516, end: 518 },
-    { no: 50, nama: "Qaf", start: 519, end: 521 },
-    { no: 51, nama: "Adz-Dzariyat", start: 521, end: 524 },
-    { no: 52, nama: "Ath-Thur", start: 524, end: 526 },
-    { no: 53, nama: "An-Najm", start: 527, end: 529 },
-    { no: 54, nama: "Al-Qamar", start: 529, end: 532 },
-    { no: 55, nama: "Ar-Rahman", start: 532, end: 535 },
-    { no: 56, nama: "Al-Waqi'ah", start: 535, end: 538 },
-    { no: 57, nama: "Al-Hadid", start: 538, end: 542 },
-    { no: 58, nama: "Al-Mujadilah", start: 543, end: 546 },
-    { no: 59, nama: "Al-Hasyr", start: 546, end: 549 },
-    { no: 60, nama: "Al-Mumtahanah", start: 550, end: 552 },
-    { no: 61, nama: "Ash-Shaff", start: 552, end: 553 },
-    { no: 62, nama: "Al-Jumu'ah", start: 554, end: 555 },
-    { no: 63, nama: "Al-Munafiqun", start: 555, end: 556 },
-    { no: 64, nama: "At-Taghabun", start: 557, end: 558 },
-    { no: 65, nama: "Ath-Thalaq", start: 559, end: 560 },
-    { no: 66, nama: "At-Tahrim", start: 561, end: 562 },
-    { no: 67, nama: "Al-Mulk", start: 563, end: 565 },
-    { no: 68, nama: "Al-Qalam", start: 565, end: 567 },
-    { no: 69, nama: "Al-Haqqah", start: 567, end: 569 },
-    { no: 70, nama: "Al-Ma'arij", start: 569, end: 571 },
-    { no: 71, nama: "Nuh", start: 571, end: 572 },
+    { no: 2, nama: "Al-Baqarah", start: 2, end: 49 },
+    { no: 3, nama: "Ali 'Imran", start: 50, end: 76 },
+    { no: 4, nama: "An-Nisa'", start: 77, end: 106 },
+    { no: 5, nama: "Al-Ma'idah", start: 106, end: 127 },
+    { no: 6, nama: "Al-An'am", start: 128, end: 150 },
+    { no: 7, nama: "Al-A'raf", start: 151, end: 176 },
+    { no: 8, nama: "Al-Anfal", start: 177, end: 186 },
+    { no: 9, nama: "At-Taubah", start: 187, end: 207 },
+    { no: 10, nama: "Yunus", start: 208, end: 221 },
+    { no: 11, nama: "Hud", start: 221, end: 235 },
+    { no: 12, nama: "Yusuf", start: 235, end: 248 },
+    { no: 13, nama: "Ar-Ra'd", start: 249, end: 255 },
+    { no: 14, nama: "Ibrahim", start: 255, end: 261 },
+    { no: 15, nama: "Al-Hijr", start: 262, end: 267 },
+    { no: 16, nama: "An-Nahl", start: 267, end: 281 },
+    { no: 17, nama: "Al-Isra'", start: 282, end: 293 },
+    { no: 18, nama: "Al-Kahf", start: 293, end: 304 },
+    { no: 19, nama: "Maryam", start: 305, end: 312 },
+    { no: 20, nama: "Thaha", start: 312, end: 321 },
+    { no: 21, nama: "Al-Anbiya'", start: 322, end: 331 },
+    { no: 22, nama: "Al-Hajj", start: 332, end: 341 },
+    { no: 23, nama: "Al-Mu'minun", start: 342, end: 350 },
+    { no: 24, nama: "An-Nur", start: 350, end: 359 },
+    { no: 25, nama: "Al-Furqan", start: 359, end: 366 },
+    { no: 26, nama: "Asy-Syu'ara'", start: 367, end: 376 },
+    { no: 27, nama: "An-Naml", start: 377, end: 385 },
+    { no: 28, nama: "Al-Qashash", start: 385, end: 396 },
+    { no: 29, nama: "Al-'Ankabut", start: 396, end: 404 },
+    { no: 30, nama: "Ar-Rum", start: 404, end: 410 },
+    { no: 31, nama: "Luqman", start: 411, end: 414 },
+    { no: 32, nama: "As-Sajdah", start: 415, end: 417 },
+    { no: 33, nama: "Al-Ahzab", start: 418, end: 427 },
+    { no: 34, nama: "Saba'", start: 428, end: 434 },
+    { no: 35, nama: "Fathir", start: 434, end: 440 },
+    { no: 36, nama: "Yasin", start: 440, end: 445 },
+    { no: 37, nama: "Ash-Shaffat", start: 446, end: 452 },
+    { no: 38, nama: "Shad", start: 453, end: 458 },
+    { no: 39, nama: "Az-Zumar", start: 458, end: 467 },
+    { no: 40, nama: "Ghafir", start: 467, end: 476 },
+    { no: 41, nama: "Fushshilat", start: 477, end: 482 },
+    { no: 42, nama: "Asy-Syura", start: 483, end: 489 },
+    { no: 43, nama: "Az-Zukhruf", start: 489, end: 495 },
+    { no: 44, nama: "Ad-Dukhan", start: 496, end: 498 },
+    { no: 45, nama: "Al-Jatsiyah", start: 499, end: 502 },
+    { no: 46, nama: "Al-Ahqaf", start: 502, end: 506 },
+    { no: 47, nama: "Muhammad", start: 507, end: 510 },
+    { no: 48, nama: "Al-Fath", start: 511, end: 515 },
+    { no: 49, nama: "Al-Hujurat", start: 515, end: 517 },
+    { no: 50, nama: "Qaf", start: 518, end: 520 },
+    { no: 51, nama: "Adz-Dzariyat", start: 520, end: 523 },
+    { no: 52, nama: "Ath-Thur", start: 523, end: 525 },
+    { no: 53, nama: "An-Najm", start: 526, end: 528 },
+    { no: 54, nama: "Al-Qamar", start: 528, end: 531 },
+    { no: 55, nama: "Ar-Rahman", start: 531, end: 534 },
+    { no: 56, nama: "Al-Waqi'ah", start: 534, end: 537 },
+    { no: 57, nama: "Al-Hadid", start: 537, end: 541 },
+    { no: 58, nama: "Al-Mujadilah", start: 542, end: 545 },
+    { no: 59, nama: "Al-Hasyr", start: 545, end: 548 },
+    { no: 60, nama: "Al-Mumtahanah", start: 549, end: 551 },
+    { no: 61, nama: "Ash-Shaff", start: 551, end: 552 },
+    { no: 62, nama: "Al-Jumu'ah", start: 553, end: 554 },
+    { no: 63, nama: "Al-Munafiqun", start: 554, end: 555 },
+    { no: 64, nama: "At-Taghabun", start: 556, end: 557 },
+    { no: 65, nama: "Ath-Thalaq", start: 558, end: 559 },
+    { no: 66, nama: "At-Tahrim", start: 560, end: 561 },
+    { no: 67, nama: "Al-Mulk", start: 562, end: 564 },
+    { no: 68, nama: "Al-Qalam", start: 564, end: 566 },
+    { no: 69, nama: "Al-Haqqah", start: 566, end: 568 },
+    { no: 70, nama: "Al-Ma'arij", start: 568, end: 570 },
+    { no: 71, nama: "Nuh", start: 570, end: 571 },
     { no: 72, nama: "Al-Jinn", start: 573, end: 574 },
     { no: 73, nama: "Al-Muzzammil", start: 575, end: 576 },
     { no: 74, nama: "Al-Muddatstsir", start: 576, end: 578 },
@@ -275,19 +294,14 @@
     const name = document.getElementById('nameReg').value;
     const email = document.getElementById('emailReg').value;
     const pass = document.getElementById('passReg').value;
-    
-    // Ubah tombol jadi loading
-    btn.innerHTML = 'Memproses...';
-    btn.disabled = true;
-
+    btn.innerHTML = 'Memproses...'; btn.disabled = true;
     try {
       const res = await createUserWithEmailAndPassword(auth, email, pass);
       await setDoc(doc(db, "users", res.user.uid), { nama: name, email: email, createdAt: new Date() });
       Swal.fire("Berhasil", "Akun dibuat!", "success");
     } catch (e) { 
       Swal.fire("Error", e.message, "error"); 
-      btn.innerHTML = 'Buat Akun'; // Kembalikan tombol jika error
-      btn.disabled = false;
+      btn.innerHTML = 'Buat Akun'; btn.disabled = false;
     }
   };
 
@@ -295,18 +309,12 @@
     const btn = document.getElementById('btnLogin');
     const email = document.getElementById('emailIn').value;
     const pass = document.getElementById('passIn').value;
-    
-    // Ubah tombol jadi loading
-    btn.innerHTML = 'Mencari Akun...';
-    btn.disabled = true;
-
+    btn.innerHTML = 'Mencari Akun...'; btn.disabled = true;
     try {
       await signInWithEmailAndPassword(auth, email, pass);
-      // Jika berhasil, onAuthStateChanged akan otomatis menyembunyikan halaman login
     } catch (e) { 
-      Swal.fire("Gagal", "Email atau Password salah!", "error"); 
-      btn.innerHTML = 'Masuk'; // Kembalikan tombol jika error
-      btn.disabled = false;
+      Swal.fire("Gagal", "Email/Password salah", "error"); 
+      btn.innerHTML = 'Masuk'; btn.disabled = false;
     }
   };
 
@@ -317,6 +325,14 @@
       currentUser = user;
       document.getElementById('authContainer').style.display = 'none';
       document.getElementById('mainApp').style.display = 'block';
+      
+      // LOGIKA ADMIN
+      if (currentUser.email === ADMIN_EMAIL) {
+          document.getElementById('navManage').style.display = 'block';
+      } else {
+          document.getElementById('navManage').style.display = 'none';
+      }
+
       initDataListener();
     } else {
       document.getElementById('authContainer').style.display = 'flex';
@@ -325,6 +341,7 @@
   });
 
   function initDataListener() {
+    // Progress User (Private)
     const qLogs = query(collection(db, "log_progres"), where("uid", "==", currentUser.uid));
     onSnapshot(qLogs, (snap) => {
       userLogs = snap.docs.map(d => ({id: d.id, ...d.data()}));
@@ -332,11 +349,13 @@
       if(activeGrid) renderGrid();
     });
 
-    const qHimp = query(collection(db, "master_himpunan"), where("uid", "==", currentUser.uid));
+    // Master Himpunan (Global & Urut dari bawah/terlama ke terbaru)
+    const qHimp = query(collection(db, "master_himpunan"), orderBy("createdAt", "asc"));
     onSnapshot(qHimp, (snap) => {
       userHimpunan = snap.docs.map(d => ({id: d.id, ...d.data()}));
       renderMasterList();
       renderManageList();
+      renderDashboard(); // Render ulang grafik dashboard
     });
   }
 
@@ -359,6 +378,8 @@
     currentKategori = kat;
     document.getElementById('btnKatQuran').className = kat === 'Quran' ? 'btn btn-success active' : 'btn btn-light';
     document.getElementById('btnKatHimpunan').className = kat === 'Himpunan' ? 'btn btn-success active' : 'btn btn-light';
+    
+    // Opsi Cetakan HANYA muncul di Al-Quran
     document.getElementById('quranOptions').style.display = kat === 'Quran' ? 'flex' : 'none';
     document.getElementById('selectCetakan').value = currentCetakan;
     renderMasterList();
@@ -370,23 +391,17 @@
     
     if (currentKategori === 'Quran') {
       quranDb.forEach(q => {
-        let s = q.start;
-        let e = q.end;
-
-        if (currentCetakan === '604') {
-          if (q.no === 1) { 
-             s = 1; e = 1; 
-          } else {
-             s = q.start + 1;
-             e = q.end - 1;
-             if (s > e) { s = q.start - 1; e = q.end - 1; if (s < 1) s = 1; }
-          }
+        let s = q.start; let e = q.end;
+        
+        // JIKA CETAKAN 605, TERJEMAHKAN KE ATAS (+1)
+        if (currentCetakan === '605') {
+            s = q.start + 1; e = q.end + 1;
         }
 
         const card = document.createElement('div');
         card.className = 'list-card';
         card.innerHTML = `<div class="nomor-badge">${q.no}</div><div><div class="fw-bold">${q.nama}</div><div class="small text-muted">Halaman ${s} - ${e}</div></div>`;
-        card.onclick = () => openGrid({ nama: q.nama, start: s, end: e, total: e });
+        card.onclick = () => openGrid({ nama: q.nama, start: s, end: e, total: (e - s + 1) });
         list.appendChild(card);
       });
     } else {
@@ -421,32 +436,24 @@
     const end = currentKategori === 'Quran' ? activeGrid.end : activeGrid.total;
 
     for (let i = start; i <= end; i++) {
-      let checkHal = i; // Ini adalah nomor standar untuk database
+      let checkHal = i; 
       
-      // TRANSLATOR: Jika UI pakai 604, cari ekuivalen halaman 605-nya
-      if (currentKategori === 'Quran' && currentCetakan === '604') {
-        const qData = quranDb.find(q => q.nama === activeGrid.nama);
-        if (qData) {
-          const start605 = qData.start;
-          const index = i - activeGrid.start;
-          checkHal = start605 + index;
-        }
+      // Jika mode 605, translate balik (-1) untuk cari di DB (yg standarnya 604)
+      if (currentKategori === 'Quran' && currentCetakan === '605') {
+          checkHal = i - 1;
       }
 
-      // Selalu cari di database menggunakan standar 605 (checkHal)
       const log = userLogs.find(l => l.kat === currentKategori && l.judul === activeGrid.nama && l.hal == checkHal);
-      
       const btn = document.createElement('div');
       btn.className = `page-btn ${log ? 'done' : ''}`;
-      btn.innerText = i; // Angka yang tampil di layar tetap angka UI (i)
-      btn.onclick = () => openNote(i, checkHal, log); // Lempar keduanya!
+      btn.innerText = i; 
+      btn.onclick = () => openNote(i, checkHal, log); 
       container.appendChild(btn);
     }
   }
 
   let activePage = null;
   window.openNote = (uiHal, stdHal, log) => {
-    // Simpan stdHal (Standar 605) untuk disimpan ke database
     activePage = { ui: uiHal, std: stdHal, logId: log ? log.id : null };
     document.getElementById('noteHeader').innerText = `Hal ${uiHal}`;
     document.getElementById('notePenyampai').value = log ? log.penyampai : '';
@@ -464,7 +471,7 @@
       uid: currentUser.uid,
       kat: currentKategori,
       judul: activeGrid.nama,
-      hal: activePage.std, // YANG DISIMPAN KE DB SELALU STANDAR 605
+      hal: activePage.std, // Simpan standar 604 ke DB
       penyampai: document.getElementById('notePenyampai').value,
       tanggal: document.getElementById('noteTanggal').value,
       lokasi: document.getElementById('noteLokasi').value,
@@ -494,16 +501,41 @@
     const topik = document.getElementById('himpTopik').value;
     const total = document.getElementById('himpTotal').value;
     if(!nama || !total) return;
-    await addDoc(collection(db, "master_himpunan"), { uid: currentUser.uid, nama, topik, total: parseInt(total) });
+    await addDoc(collection(db, "master_himpunan"), { 
+        nama, topik, total: parseInt(total), createdAt: new Date() 
+    });
     document.getElementById('himpNama').value = '';
     document.getElementById('himpTopik').value = '';
     document.getElementById('himpTotal').value = '';
   };
 
+  // FITUR RAHASIA: BULK INSERT
+  window.bulkInsertHimpunan = async () => {
+    const text = document.getElementById('bulkData').value;
+    if(!text) return alert("Data kosong!");
+    
+    const lines = text.split('\n');
+    let count = 0;
+    
+    for(let line of lines) {
+        const parts = line.split(',');
+        if(parts.length >= 3) {
+            await addDoc(collection(db, "master_himpunan"), {
+                nama: parts[0].trim(),
+                topik: parts[1].trim(),
+                total: parseInt(parts[2].trim()),
+                createdAt: new Date()
+            });
+            count++;
+        }
+    }
+    alert(`Sukses! ${count} Buku Himpunan berhasil diinput ke Server.`);
+    document.getElementById('bulkData').value = '';
+  };
+
   function renderDashboard() {
     const cont = document.getElementById('dashboardStats');
     
-    // Progres Al-Quran Utama
     const maxHal = currentCetakan === '604' ? 604 : 605;
     const qDone = userLogs.filter(l => l.kat === 'Quran').length;
     let qPerc = Math.round((qDone / maxHal) * 100);
@@ -521,12 +553,7 @@
             <div class="mt-3 pe-2" style="max-height: 250px; overflow-y: auto;">`;
 
     quranDb.forEach(q => {
-        let s = q.start; let e = q.end;
-        if (currentCetakan === '604') {
-            if (q.no === 1) { s = 1; e = 1; }
-            else { s = q.start+1; e = q.end-1; if(s>e){s=q.start-1;e=q.end-1;if(s<1)s=1;} }
-        }
-        let totalHal = (e - s) + 1;
+        let totalHal = (q.end - q.start) + 1;
         const sLogs = userLogs.filter(l => l.kat === 'Quran' && l.judul === q.nama).length;
         let p = Math.round((sLogs / totalHal) * 100);
         if(p > 100) p = 100;
@@ -548,7 +575,6 @@
 
     html += `</div></details></div>`;
 
-    // Himpunan Progress
     userHimpunan.forEach(h => {
         const hDone = userLogs.filter(l => l.kat === 'Himpunan' && l.judul === h.nama).length;
         const hPerc = h.total > 0 ? Math.round((hDone / h.total) * 100) : 0;
@@ -575,7 +601,7 @@
   }
 
   window.deleteHimpunan = async (id) => {
-    if(confirm("Hapus himpunan ini?")) await deleteDoc(doc(db, "master_himpunan", id));
+    if(confirm("Hapus himpunan ini dari Server Global?")) await deleteDoc(doc(db, "master_himpunan", id));
   };
 
 </script>
