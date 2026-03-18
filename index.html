@@ -74,6 +74,13 @@
         <button id="btnKatQuran" class="btn btn-success active" onclick="switchKategori('Quran')">Al-Qur'an</button>
         <button id="btnKatHimpunan" class="btn btn-light" onclick="switchKategori('Himpunan')">Himpunan</button>
     </div>
+    <div id="quranOptions" class="mb-3 d-flex justify-content-end align-items-center">
+        <label class="small text-muted fw-bold me-2">Cetakan:</label>
+        <select id="selectCetakan" class="form-select form-select-sm w-auto shadow-sm" onchange="changeCetakan(this.value)">
+            <option value="605">605 Halaman</option>
+            <option value="604">604 Halaman</option>
+        </select>
+    </div>
     <div id="masterList"></div>
     <div id="detailGrid" style="display: none;">
         <button class="btn btn-light mb-3 fw-bold" onclick="closeGrid()"><i class="bi bi-arrow-left"></i> Kembali</button>
@@ -221,21 +228,72 @@
     renderMasterList();
   };
 
+  // Variabel penyimpan pilihan cetakan (diingat oleh HP user)
+  let currentCetakan = localStorage.getItem('cetakanQuran') || '605';
+
+  // Fungsi saat user mengubah cetakan
+  window.changeCetakan = (val) => {
+    currentCetakan = val;
+    localStorage.setItem('cetakanQuran', val);
+    renderMasterList(); // Render ulang daftar secara instan
+  };
+
+  window.switchKategori = (kat) => {
+    currentKategori = kat;
+    document.getElementById('btnKatQuran').className = kat === 'Quran' ? 'btn btn-success active' : 'btn btn-light';
+    document.getElementById('btnKatHimpunan').className = kat === 'Himpunan' ? 'btn btn-success active' : 'btn btn-light';
+    
+    // Sembunyikan dropdown cetakan kalau lagi di menu Himpunan
+    document.getElementById('quranOptions').style.display = kat === 'Quran' ? 'flex' : 'none';
+    
+    // Pastikan dropdown menampilkan nilai yang tersimpan
+    document.getElementById('selectCetakan').value = currentCetakan;
+    renderMasterList();
+  };
+
   function renderMasterList() {
     const list = document.getElementById('masterList');
     list.innerHTML = '';
-    const data = currentKategori === 'Quran' ? quranDb : userHimpunan;
     
-    data.forEach((item, index) => {
-      const card = document.createElement('div');
-      card.className = 'list-card';
-      const no = currentKategori === 'Quran' ? item.no : index + 1;
-      const sub = currentKategori === 'Quran' ? `Halaman ${item.start}-${item.end}` : `${item.topik} • ${item.total} Hal`;
-      
-      card.innerHTML = `<div class="nomor-badge">${no}</div><div><div class="fw-bold">${item.nama}</div><div class="small text-muted">${sub}</div></div>`;
-      card.onclick = () => openGrid(item);
-      list.appendChild(card);
-    });
+    if (currentKategori === 'Quran') {
+      quranDb.forEach(q => {
+        let s = q.start;
+        let e = q.end;
+
+        // LOGIKA CETAKAN 604 HALAMAN MAS FARISH
+        if (currentCetakan === '604') {
+          // Khusus Al-Fatihah biasanya tetap di Hal 1
+          if (q.no === 1) { 
+             s = 1; e = 1; 
+          } else {
+             s = q.start + 1;
+             e = q.end - 1;
+             // Safety Check untuk surat pendek agar tidak error
+             if (s > e) {
+               s = q.start - 1; // Mundur 1 halaman
+               e = q.end - 1;
+               if (s < 1) s = 1; // Cegah minus
+             }
+          }
+        }
+
+        const card = document.createElement('div');
+        card.className = 'list-card';
+        card.innerHTML = `<div class="nomor-badge">${q.no}</div><div><div class="fw-bold">${q.nama}</div><div class="small text-muted">Halaman ${s} - ${e}</div></div>`;
+        
+        // Kirim data start & end yang sudah disesuaikan ke fungsi Grid
+        card.onclick = () => openGrid({ nama: q.nama, start: s, end: e, total: e });
+        list.appendChild(card);
+      });
+    } else {
+      userHimpunan.forEach((h, index) => {
+        const card = document.createElement('div');
+        card.className = 'list-card';
+        card.innerHTML = `<div class="nomor-badge">${index + 1}</div><div><div class="fw-bold">${h.nama}</div><div class="small text-muted">${h.topik} • ${h.total} Hal</div></div>`;
+        card.onclick = () => openGrid(h);
+        list.appendChild(card);
+      });
+    }
   }
 
   window.openGrid = (item) => {
