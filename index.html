@@ -387,6 +387,10 @@
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById('view-' + viewId).classList.add('active');
     el.classList.add('active');
+    
+    // --- TAMBAHAN BARU: Reset Search & Master List ---
+    document.getElementById('searchInput').value = ''; 
+    if(viewId === 'search') performSearch(); // Kembalikan ke layar kosong
     if(viewId === 'tracker') { closeGrid(); renderMasterList(); }
   };
 
